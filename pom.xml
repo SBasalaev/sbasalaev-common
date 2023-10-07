@@ -3,10 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.nsu.sbasalaev.common</groupId>
     <artifactId>sbasalaev-common</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1</version>
     <scm>
         <connection>scm:git:git@github.com:SBasalaev/sbasalaev-common.git</connection>
-    </scm>
+      <tag>sbasalaev-common-3.1</tag>
+  </scm>
     <build>
         <plugins>
             <plugin>
