@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022 Sergey Basalaev.
+ * Copyright 2015, 2022, 2023 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -239,8 +239,9 @@ public abstract class Set<@Out T> extends Collection<T> {
     /** Returns shallow immutable copy of this set. */
     @Override
     @SuppressWarnings("unchecked")
-    public Set<T> clone() {
+    public final Set<T> clone() {
         if (isEmpty()) return empty();
+        if (this instanceof Immutable) return this;
         var array = new Object[size()];
         fillArray(array, 0);
         return fromTrustedArray((T[]) toArray());
@@ -274,11 +275,6 @@ public abstract class Set<@Out T> extends Collection<T> {
     /* IMMUTABLE IMPLEMENTATIONS */
 
     private static abstract class Immutable<@Out T> extends Set<T> {
-
-        @Override
-        public Set<T> clone() {
-            return this;
-        }
 
         @Override
         public Set<T> toSet() {

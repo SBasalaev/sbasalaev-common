@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2023 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -368,8 +368,9 @@ public abstract class List<@Out T> extends Collection<T> {
     /** Returns shallow immutable copy of this list. */
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> clone() {
+    public final List<T> clone() {
         if (isEmpty()) return empty();
+        if (this instanceof Immutable) return this;
         var array = new Object[size()];
         fillArray(array, 0);
         return fromTrustedArray((T[]) toArray());
@@ -480,11 +481,6 @@ public abstract class List<@Out T> extends Collection<T> {
                 case 0, 1 -> this;
                 default   -> super.reversed();
             };
-        }
-
-        @Override
-        public List<T> clone() {
-            return this;
         }
 
         @Override

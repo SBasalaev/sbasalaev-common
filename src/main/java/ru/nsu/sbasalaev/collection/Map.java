@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022 Sergey Basalaev.
+ * Copyright 2015, 2022, 2023 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -367,8 +367,9 @@ public abstract class Map<K, @Out V> implements Cloneable {
     /** Returns shallow immutable copy of this map. */
     @Override
     @SuppressWarnings("unchecked")
-    public Map<K, V> clone() {
+    public final Map<K, V> clone() {
         if (isEmpty()) return empty();
+        if (this instanceof Immutable) return this;
         var array = new Entry<?,?>[size()];
         entries().fillArray(array, 0);
         return fromTrustedArray((Entry<K,V>[]) array);
@@ -392,13 +393,7 @@ public abstract class Map<K, @Out V> implements Cloneable {
     }
 
     /* IMMUTABLE IMPLEMENTATIONS */
-    private static abstract class Immutable<K, @Out V> extends Map<K, V> {
-
-        @Override
-        public Map<K, V> clone() {
-            return this;
-        }
-    }
+    private static abstract class Immutable<K, @Out V> extends Map<K, V> { }
 
     /** Singleton map with no elements. */
     private static final class EmptyMap
