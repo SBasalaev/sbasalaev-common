@@ -31,6 +31,7 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
 /**
+ * Base class for annotation processors.
  *
  * @author Sergey Basalaev
  */
@@ -48,27 +49,27 @@ abstract class ProcessorBase extends AbstractProcessor {
         return processingEnv.getTypeUtils();
     }
 
-	protected void error(String message, Element e) {
-		processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, e);
-	}
+    protected void error(String message, Element e) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, e);
+    }
 
-	protected void error(String message) {
-		processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message);
-	}
+    protected void error(String message) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message);
+    }
 
-	protected void warning(String message, Element e) {
-		processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, message, e);
-	}
+    protected void warning(String message, Element e) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, message, e);
+    }
 
-	protected void warning(String message) {
-		processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, message);
-	}
+    protected void warning(String message) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, message);
+    }
 
-	protected void message(String message, Element e) {
-		processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message, e);
-	}
+    protected void message(String message, Element e) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message, e);
+    }
 
-	protected void message(String message) {
-		processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
-	}
+    protected void message(String message) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
+    }
 }

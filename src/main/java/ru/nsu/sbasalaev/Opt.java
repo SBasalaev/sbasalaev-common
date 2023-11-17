@@ -94,6 +94,12 @@ public final class Opt<T> extends Collection<T> {
         return value;
     }
 
+    /*
+     * The following method is the reason type parameter can not be marked @Out.
+     * If Java allowed union types the method could have the signature of
+     *     <S> T|S orElse(S defaultValue)
+     */
+
     /** Returns value in this optional or {@code defaultValue} if the optional is empty. */
     public T orElse(T defaultValue) {
         Objects.requireNonNull(defaultValue);
@@ -112,6 +118,17 @@ public final class Opt<T> extends Collection<T> {
             return value;
         }
         throw new NoSuchElementException(message);
+    }
+
+    /**
+     * Returns value in this optional or throws the exception from given supplier.
+     * @since 3.2
+     */
+    public <X extends Throwable> T orElseThrow(Supplier<X> exceptionSupplier) throws X {
+        if (value != null) {
+            return value;
+        }
+        throw exceptionSupplier.get();
     }
 
     /**

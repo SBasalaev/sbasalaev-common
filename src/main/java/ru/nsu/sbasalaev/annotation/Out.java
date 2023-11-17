@@ -27,8 +27,9 @@ import java.lang.annotation.*;
 
 /**
  * Annotates covariant type parameters.
- * This annotation indicates that class only acts
- * as producer of values of annotated type.
+ * This annotation indicates that the class only acts as a producer of values
+ * of annotated type. During annotation processing phase the library performs
+ * some checks on the usage of annotated parameter types.
  *
  * @author Sergey Basalaev
  */

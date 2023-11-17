@@ -22,7 +22,13 @@
  * THE SOFTWARE.
  */
 
-/** Common goodies that I use across my projects. */
+/**
+ * Common goodies that I use across my projects.
+ * <h2>Nullability</h2>
+ * Methods in this module do not accept or return {@code null} unless
+ * explicitly annotated as {@link ru.nsu.sbasalaev.annotation.Nullable }.
+ * {@link ru.nsu.sbasalaev.Opt } is used for optional parameters and return types.
+ */
 module ru.nsu.sbasalaev.common {
     requires static java.compiler;
 
