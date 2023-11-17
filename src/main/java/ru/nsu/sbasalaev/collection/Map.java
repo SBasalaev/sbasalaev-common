@@ -26,6 +26,7 @@ package ru.nsu.sbasalaev.collection;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
+import static ru.nsu.sbasalaev.API.some;
 import ru.nsu.sbasalaev.Opt;
 import ru.nsu.sbasalaev.annotation.Nullable;
 import ru.nsu.sbasalaev.annotation.Out;
@@ -35,7 +36,9 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public abstract class Map<K, @Out V> implements Cloneable {
+public abstract class Map<K, @Out V>
+    extends Multimap<K, V, Opt<V>>
+    implements Cloneable {
 
     /* CONSTRUCTORS */
 
@@ -200,30 +203,49 @@ public abstract class Map<K, @Out V> implements Cloneable {
     /* INTERFACE */
 
     /** Value associated with given key or empty optional if there is none. */
+    @Override
     public abstract Opt<V> get(K key);
 
-    /** Whether given key is present in this map. */
-    public boolean containsKey(K key) {
-        return get(key).nonEmpty();
+    /**
+     * Number of keys in this map.
+     * For the map this method returns the same value as {@code size()}.
+     * @since 3.2
+     */
+    @Override
+    public int keySize() {
+        return size();
     }
 
-    /** The number of entries in this map. */
-    public abstract int size();
-
-    /** Whether this map has no entries. */
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    /** Whether this map has entries. */
-    public boolean nonEmpty() {
-        return size() != 0;
-    }
-
-    /** The set of entries in this map. */
+    /** The set of key-value associations in this map. */
     public abstract Set<Entry<K,V>> entries();
 
-    /** The set of keys present in this map. */
+    @Override
+    public Set<Entry<K, Opt<V>>> collectionEntries() {
+        var entries = entries();
+        return new Set<Entry<K, Opt<V>>>() {
+            @Override
+            public boolean contains(Object element) {
+                if (element instanceof Entry<?,?> entry && entry.value() instanceof Opt<?> value && value.nonEmpty()) {
+                    for (var valueOfThis : Map.this.get((K) entry.key())) {
+                        return value.exists(valueOfThis::equals);
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public int size() {
+                return entries.size();
+            }
+
+            @Override
+            public Iterator<Entry<K, Opt<V>>> iterator() {
+                return Iterators.map(entries.iterator(), e -> Entry.of(e.key(), some(e.value())));
+            }
+        };
+    }
+
+    /** The set of keys that have an associated value in this map. */
     public Set<K> keys() {
         return new Set<>() {
             @Override
@@ -242,11 +264,6 @@ public abstract class Map<K, @Out V> implements Cloneable {
                 return Iterators.map(Map.this.entries().iterator(), Entry::key);
             }
         };
-    }
-
-    /** Traverses all the values of the map. */
-    public Traversable<V> values() {
-        return entries().map(Entry::value);
     }
 
     /** View of this map with given mapping applied to values. */
@@ -375,6 +392,11 @@ public abstract class Map<K, @Out V> implements Cloneable {
         return fromTrustedArray((Entry<K,V>[]) array);
     }
 
+    /**
+     * Whether some object is equal to this map.
+     * Two maps are equal if they contain the same entries,
+     * i.e. their {@link #entries() } methods return equal sets.
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -382,23 +404,11 @@ public abstract class Map<K, @Out V> implements Cloneable {
         return this.entries().equals(map.entries());
     }
 
-    @Override
-    public int hashCode() {
-        return entries().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return entries().toString();
-    }
-
     /* IMMUTABLE IMPLEMENTATIONS */
     private static abstract class Immutable<K, @Out V> extends Map<K, V> { }
 
     /** Singleton map with no elements. */
-    private static final class EmptyMap
-        extends Immutable<Object, Object>
-        implements EmptyCollection<Entry<Object,Object>> {
+    private static final class EmptyMap extends Immutable<Object, Object> {
 
         private EmptyMap() { }
 

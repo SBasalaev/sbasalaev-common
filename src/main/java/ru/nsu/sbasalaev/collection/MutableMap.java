@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022 Sergey Basalaev.
+ * Copyright 2015, 2022, 2023 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,9 @@ import ru.nsu.sbasalaev.Opt;
  *
  * @author Sergey Basalaev
  */
-public abstract class MutableMap<K, V> extends Map<K, V> {
+public abstract class MutableMap<K, V>
+    extends Map<K, V>
+    implements MultimapMutator<K, V, Opt<V>> {
 
     /* CONSTRUCTORS */
 
@@ -51,6 +53,7 @@ public abstract class MutableMap<K, V> extends Map<K, V> {
         return new DefaultImpl<>();
     }
 
+    /** Returns new mutable map that initially contains given values. */
     public static <K,V> MutableMap<K,V> copyOf(Map<K,V> map) {
         MutableMap<K,V> result = empty();
         for (var entry : map.entries()) {
@@ -62,13 +65,26 @@ public abstract class MutableMap<K, V> extends Map<K, V> {
     /* INTERFACE */
 
     /**
-     * Associates {@code value} with the {@code key} in this map.
+     * Associates the {@code value} with the {@code key} in this map.
      *
      * @return
      *   value that was previously associated with the key
      *   or empty optional if there was none.
      */
     public abstract Opt<V> set(K key, V value);
+
+    /**
+     * Associates the {@code value} with the {@code key} in this map.
+     *
+     * @return
+     *   {@code false} if the value was already associated with this
+     *   key, {@code true} otherwise.
+     */
+    @Override
+    public boolean put(K key, V value) {
+        var prev = set(key, value);
+        return !prev.exists(value::equals);
+    }
 
     /**
      * Returns value associated with given key, adds it if no value was associated.
@@ -98,6 +114,12 @@ public abstract class MutableMap<K, V> extends Map<K, V> {
         return value;
     }
 
+    /**
+     * Updates association with given key if it is already present in this map.
+     *
+     * @return the new value associated with the key, or none() if the key was
+     *         not present in this map.
+     */
     public Opt<V> updateIfPresent(K key, UnaryOperator<V> transformer) {
         for (var value : get(key).mapped(transformer)) {
             set(key, value);
@@ -106,11 +128,13 @@ public abstract class MutableMap<K, V> extends Map<K, V> {
         return none();
     }
 
-    /** Removes key and associated value from this map. */
+    /**
+     * Removes key and associated value from this map.
+     *
+     * @return the value previously associated with this key, if any.
+     */
+    @Override
     public abstract Opt<V> removeKey(K key);
-
-    /** Removes all entries from this map. */
-    public abstract void clear();
 
     /**
      * Removes all elements matching given condition from the collection.

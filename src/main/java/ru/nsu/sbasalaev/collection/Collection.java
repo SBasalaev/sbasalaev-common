@@ -37,8 +37,8 @@ import ru.nsu.sbasalaev.annotation.Out;
  * Every collection has a notion
  * of {@linkplain #equals(java.lang.Object) equality} though that notion
  * depends on the type of the collection.
- * Collection may be {@linkplain #clone() cloned} to obtain a copy
- * of a collection of the same type.
+ * Collection may be {@linkplain #clone() cloned} to obtain a
+ * shallow immutable copy of the collection of the same type.
  *
  * @author Sergey Basalaev
  */
