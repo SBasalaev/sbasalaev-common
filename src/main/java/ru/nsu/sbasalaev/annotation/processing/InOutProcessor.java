@@ -24,6 +24,7 @@
 package ru.nsu.sbasalaev.annotation.processing;
 
 import java.util.Set;
+import java.util.function.*;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -34,6 +35,7 @@ import ru.nsu.sbasalaev.annotation.In;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
+ * Processes @In and @Out annotations in Java source.
  *
  * @author Sergey Basalaev
  */
@@ -52,7 +54,7 @@ public final class InOutProcessor extends ProcessorBase {
         for (Element e : annotated) {
             var tp = (TypeParameterElement) e;
             if (tp.getAnnotation(In.class) != null && tp.getAnnotation(Out.class) != null) {
-                warning("Both @In and @Out are present on type parameter " + tp.getSimpleName(), tp);
+                error("Both @In and @Out are present on type parameter " + tp.getSimpleName(), tp);
             }
             new InOutElementVisitor(tp).visit(tp.getEnclosingElement());
         }
@@ -185,7 +187,7 @@ public final class InOutProcessor extends ProcessorBase {
         }
     }
 
-    /** Visits type expressions and checks given type parameter in them. */
+    /** Visits type expressions and checks usages of given type parameter in them. */
     private final class InOutTypeVisitor implements TypeVisitor<Void, Variance> {
 
         private final TypeParameterElement typeParameter;
@@ -218,9 +220,9 @@ public final class InOutProcessor extends ProcessorBase {
                         for (int i=0; i < params.size(); i++) {
                             var param = params.get(i);
                             var arg = args.get(i);
-                            if (param.getAnnotation(Out.class) != null) {
+                            if (isOutTypeParameter(clazz, param)) {
                                 visit(arg, v);
-                            } else if (param.getAnnotation(In.class) != null) {
+                            } else if (isInTypeParameter(clazz, param)) {
                                 visit(arg, v.opposite());
                             } else {
                                 visit(arg, Variance.Any);
@@ -316,5 +318,57 @@ public final class InOutProcessor extends ProcessorBase {
             }
             return null;
         }
+    }
+
+    /** 
+     * Names from {@code java.util.function} with recognisable type parameter variance.
+     * The type parameter is @Out if it is named {@code R} and is @In otherwise.
+     */
+    private static final Set<String> javaUtilFunctionNames = Set.of(
+        BiConsumer.class.getName(),
+        BiFunction.class.getName(),
+        BiPredicate.class.getName(),
+        Consumer.class.getName(),
+        DoubleFunction.class.getName(),
+        Function.class.getName(),
+        IntFunction.class.getName(),
+        LongFunction.class.getName(),
+        ObjDoubleConsumer.class.getName(),
+        ObjIntConsumer.class.getName(),
+        ObjLongConsumer.class.getName(),
+        Predicate.class.getName(),
+        Supplier.class.getName(),
+        ToDoubleBiFunction.class.getName(),
+        ToDoubleFunction.class.getName(),
+        ToIntBiFunction.class.getName(),
+        ToIntFunction.class.getName(),
+        ToLongBiFunction.class.getName(),
+        ToLongFunction.class.getName()
+    );
+
+    /**
+     * Whether this type parameter is regarded as @Out type parameter.
+     * In addition to the type parameters explicitly marked as such, we
+     * recognise some type parameters of {@code java.util.function.*} classes.
+     */
+    private static boolean isOutTypeParameter(TypeElement clazz, TypeParameterElement typeParameter) {
+        if (typeParameter.getAnnotation(Out.class) != null) {
+            return true;
+        }
+        return typeParameter.getSimpleName().contentEquals("R")
+            && javaUtilFunctionNames.contains(clazz.getQualifiedName().toString());
+    }
+
+    /**
+     * Whether this type parameter is regarded as @In type parameter.
+     * In addition to the type parameters explicitly marked as such, we
+     * recognise some type parameters of {@code java.util.function.*} classes.
+     */
+    private static boolean isInTypeParameter(TypeElement clazz, TypeParameterElement typeParameter) {
+        if (typeParameter.getAnnotation(In.class) != null) {
+            return true;
+        }
+        return !typeParameter.getSimpleName().contentEquals("R")
+            && javaUtilFunctionNames.contains(clazz.getQualifiedName().toString());
     }
 }
