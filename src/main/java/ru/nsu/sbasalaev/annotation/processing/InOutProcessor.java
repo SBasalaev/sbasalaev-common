@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018, 2022 Sergey Basalaev.
+ * Copyright 2018, 2022, 2023 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@ import javax.lang.model.element.*;
 import javax.lang.model.type.*;
 import ru.nsu.sbasalaev.annotation.In;
 import ru.nsu.sbasalaev.annotation.Out;
+import ru.nsu.sbasalaev.collection.List;
+import ru.nsu.sbasalaev.collection.Map;
 
 /**
  * Processes @In and @Out annotations in Java source.
@@ -314,37 +316,42 @@ public final class InOutProcessor extends ProcessorBase {
             }
             bound = wildcard.getSuperBound();
             if (bound != null) {
-                visit(bound, v.opposite());
+                visit(bound, v);
             }
             return null;
         }
     }
 
+    /** Names of the type parameters with known variance. */
+    private record Params(List<String> inParams, List<String> outParams) { }
+
     /** 
      * Names from {@code java.util.function} with recognisable type parameter variance.
      * The type parameter is @Out if it is named {@code R} and is @In otherwise.
+     * The only exception is {@code Supplier} whose @Out parameter is inconveniently
+     * named {@code T}.
      */
-    private static final Set<String> javaUtilFunctionNames = Set.of(
-        BiConsumer.class.getName(),
-        BiFunction.class.getName(),
-        BiPredicate.class.getName(),
-        Consumer.class.getName(),
-        DoubleFunction.class.getName(),
-        Function.class.getName(),
-        IntFunction.class.getName(),
-        LongFunction.class.getName(),
-        ObjDoubleConsumer.class.getName(),
-        ObjIntConsumer.class.getName(),
-        ObjLongConsumer.class.getName(),
-        Predicate.class.getName(),
-        Supplier.class.getName(),
-        ToDoubleBiFunction.class.getName(),
-        ToDoubleFunction.class.getName(),
-        ToIntBiFunction.class.getName(),
-        ToIntFunction.class.getName(),
-        ToLongBiFunction.class.getName(),
-        ToLongFunction.class.getName()
-    );
+    private static final Map<String, Params> recognisedNames = Map.<String,Params>build()
+        .add(BiConsumer.class.getName(),        new Params(List.of("T","U"),  List.of()))
+        .add(BiFunction.class.getName(),        new Params(List.of("T","U"),  List.of("R")))
+        .add(BiPredicate.class.getName(),       new Params(List.of("T","U"),  List.of()))
+        .add(Consumer.class.getName(),          new Params(List.of("T"),      List.of()))
+        .add(DoubleFunction.class.getName(),    new Params(List.of(),         List.of("R")))
+        .add(Function.class.getName(),          new Params(List.of("T"),      List.of("R")))
+        .add(IntFunction.class.getName(),       new Params(List.of(),         List.of("R")))
+        .add(LongFunction.class.getName(),      new Params(List.of(),         List.of("R")))
+        .add(ObjDoubleConsumer.class.getName(), new Params(List.of("T"),      List.of()))
+        .add(ObjIntConsumer.class.getName(),    new Params(List.of("T"),      List.of()))
+        .add(ObjLongConsumer.class.getName(),   new Params(List.of("T"),      List.of()))
+        .add(Predicate.class.getName(),         new Params(List.of("T"),      List.of()))
+        .add(Supplier.class.getName(),          new Params(List.of(),         List.of("T")))
+        .add(ToDoubleBiFunction.class.getName(),new Params(List.of("T", "U"), List.of()))
+        .add(ToDoubleFunction.class.getName(),  new Params(List.of("T"),      List.of()))
+        .add(ToIntBiFunction.class.getName(),   new Params(List.of("T", "U"), List.of()))
+        .add(ToIntFunction.class.getName(),     new Params(List.of("T"),      List.of()))
+        .add(ToLongBiFunction.class.getName(),  new Params(List.of("T", "U"), List.of()))
+        .add(ToLongFunction.class.getName(),    new Params(List.of("T"),      List.of()))
+        .toMap();
 
     /**
      * Whether this type parameter is regarded as @Out type parameter.
@@ -355,8 +362,10 @@ public final class InOutProcessor extends ProcessorBase {
         if (typeParameter.getAnnotation(Out.class) != null) {
             return true;
         }
-        return typeParameter.getSimpleName().contentEquals("R")
-            && javaUtilFunctionNames.contains(clazz.getQualifiedName().toString());
+        for (var params : recognisedNames.get(clazz.getQualifiedName().toString())) {
+            return params.outParams.exists(typeParameter.getSimpleName().toString()::equals);
+        }
+        return false;
     }
 
     /**
@@ -368,7 +377,9 @@ public final class InOutProcessor extends ProcessorBase {
         if (typeParameter.getAnnotation(In.class) != null) {
             return true;
         }
-        return !typeParameter.getSimpleName().contentEquals("R")
-            && javaUtilFunctionNames.contains(clazz.getQualifiedName().toString());
+        for (var params : recognisedNames.get(clazz.getQualifiedName().toString())) {
+            return params.inParams.exists(typeParameter.getSimpleName().toString()::equals);
+        }
+        return false;
     }
 }
