@@ -90,6 +90,11 @@ public abstract class SetMultimap<K, @Out V>
     /* OVERRIDEN MEMBERS */
 
     @Override
+    public boolean containsEntry(K key, Object value) {
+        return get(key).contains(value);
+    }
+
+    @Override
     public Set<Entry<K, V>> entries() {
         return new Set<Entry<K, V>>() {
             @Override

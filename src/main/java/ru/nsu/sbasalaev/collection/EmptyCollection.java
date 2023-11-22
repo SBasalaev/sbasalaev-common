@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 import ru.nsu.sbasalaev.Require;
 
 /**
- * Shared implementation of empty collections.
+ * Shared implementation of immutable empty collections.
  *
  * @author Sergey Basalaev
  */

@@ -302,6 +302,11 @@ public abstract class List<@Out T> extends Collection<T> {
             public int size() {
                 return List.this.size();
             }
+
+            @Override
+            public List<T> reversed() {
+                return List.this;
+            }
         };
     }
 
@@ -456,6 +461,12 @@ public abstract class List<@Out T> extends Collection<T> {
 
     /**
      * Returns hash code for the list.
+     * The hash code for the list is defined to be equal to
+     * <pre>fold(1, (hash, item) -> hash*31 + item.hashCode());</pre>
+     * This means that the hash code for the list is compatible with
+     * Java definitions for {@link java.util.List#hashCode() },
+     * {@link java.util.Arrays#hashCode(java.lang.Object[]) }
+     * and {@link java.util.Objects#hash(java.lang.Object...) }.
      */
     @Override
     public int hashCode() {
@@ -523,6 +534,11 @@ public abstract class List<@Out T> extends Collection<T> {
         }
 
         @Override
+        public <R> List<R> map(Function<? super Object, ? extends R> mapping) {
+            return List.empty();
+        }
+
+        @Override
         public <R> List<R> mapped(Function<? super Object, ? extends R> mapping) {
             return List.empty();
         }
@@ -530,6 +546,11 @@ public abstract class List<@Out T> extends Collection<T> {
         @Override
         public List<Object> filtered(Predicate<? super Object> condition) {
             return this;
+        }
+
+        @Override
+        public List<IndexedElement<Object>> indexed() {
+            return List.empty();
         }
 
         @Override

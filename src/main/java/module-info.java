@@ -31,6 +31,7 @@
  */
 module ru.nsu.sbasalaev.common {
     requires static java.compiler;
+//    requires org.checkerframework.checker.qual;
 
     exports ru.nsu.sbasalaev;
     exports ru.nsu.sbasalaev.annotation;
