@@ -24,7 +24,6 @@
 package ru.nsu.sbasalaev.collection;
 
 import java.util.Iterator;
-import ru.nsu.sbasalaev.API;
 import ru.nsu.sbasalaev.Opt;
 import ru.nsu.sbasalaev.annotation.Out;
 

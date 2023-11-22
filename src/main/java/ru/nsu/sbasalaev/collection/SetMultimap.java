@@ -23,26 +23,24 @@
  */
 package ru.nsu.sbasalaev.collection;
 
-import ru.nsu.sbasalaev.API;
+import java.util.Iterator;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
- * Mapping of keys to lists of values.
  *
  * @author Sergey Basalaev
- * @since 3.2
  */
-public abstract class ListMultimap<K, @Out V>
-    extends Multimap<K, V, List<V>>
+public abstract class SetMultimap<K, @Out V>
+    extends Multimap<K, V, Set<V>>
     implements Cloneable {
 
     /* CONSTRUCTORS */
 
-    private static final ListMultimap<?, ?> EMPTY = new EmptyMultimap();
+    private static final SetMultimap<?, ?> EMPTY = new EmptyMultimap();
 
     /** Empty list multimap. */
-    public static <K,V> ListMultimap<K, V> empty() {
-        return (ListMultimap<K, V>) EMPTY;
+    public static <K,V> SetMultimap<K, V> empty() {
+        return (SetMultimap<K, V>) EMPTY;
     }
 
     /** Builder of immutable list multimaps. */
@@ -52,7 +50,7 @@ public abstract class ListMultimap<K, @Out V>
 
     public static final class Builder<K, V> {
 
-        private final MutableListMultimap<K, V> collector = MutableListMultimap.empty();
+        private final MutableSetMultimap<K, V> collector = MutableSetMultimap.empty();
 
         private Builder() { }
 
@@ -66,9 +64,9 @@ public abstract class ListMultimap<K, @Out V>
             return this;
         }
 
-        public ListMultimap<K,V> toListMultimap() {
+        public SetMultimap<K,V> toSetMultimap() {
             if (collector.keySize() == 0) return empty();
-            Entry<K, List<V>>[] entries = new Entry[collector.keySize()];
+            Entry<K, Set<V>>[] entries = new Entry[collector.keySize()];
             int index = 0;
             for (var entry : collector.collectionEntries()) {
                 entries[index] = Entry.of(entry.key(), entry.value().clone());
@@ -78,52 +76,67 @@ public abstract class ListMultimap<K, @Out V>
         }
     }
 
-    private static <K,V> ListMultimap<K,V> fromTrustedArray(Entry<K, List<V>>[] entries) {
+    private static <K,V> SetMultimap<K,V> fromTrustedArray(Entry<K, Set<V>>[] entries) {
         if (entries.length == 0) return empty();
         return new WheelMultimap<>(HashWheel.make(entries, Entry::key));
     }
 
     /* INTERFACE */
 
-    /**
-     * Values associated with given key in this multimap.
-     * Values are returned in the same order they are added to this multimap.
-     */
+    /** Set of values associated with given key in this multimap. */
     @Override
-    public abstract List<V> get(K key);
+    public abstract Set<V> get(K key);
 
     /* OVERRIDEN MEMBERS */
 
     @Override
-    public Traversable<Entry<K, V>> entries() {
-        return collectionEntries().chainMap(e -> e.value().map(v -> Entry.of(e.key(), v)));
+    public Set<Entry<K, V>> entries() {
+        return new Set<Entry<K, V>>() {
+            @Override
+            public boolean contains(Object element) {
+                if (!(element instanceof Entry<?,?> entry)) return false;
+                return SetMultimap.this.containsEntry((Entry<K,?>) entry);
+            }
+
+            @Override
+            public int size() {
+                return SetMultimap.this.size();
+            }
+
+            @Override
+            public Iterator<Entry<K, V>> iterator() {
+                return collectionEntries()
+                    .chainMap(e -> e.value().map(v -> Entry.of(e.key(), v)))
+                    .iterator();
+            }
+        };
     }
 
     @Override
-    public ListMultimap<K, V> clone() {
+    public SetMultimap<K, V> clone() {
         if (isEmpty()) return empty();
         if (this instanceof ImmutableMultimap) return this;
         var array = new Entry<?,?>[size()];
         collectionEntries().fillArray(array, 0);
-        return fromTrustedArray((Entry<K,List<V>>[]) array);
+        return fromTrustedArray((Entry<K,Set<V>>[]) array);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof ListMultimap<?,?> map)) return false;
+        if (!(obj instanceof SetMultimap<?,?> map)) return false;
         return collectionEntries().equals(map.collectionEntries());
     }
 
     /* IMMUTABLE IMPLEMENTATIONS */
 
-    private static abstract class ImmutableMultimap<K, @Out V> extends ListMultimap<K, V> { }
+    private static abstract class ImmutableMultimap<K, @Out V> extends SetMultimap<K, V> { }
 
     private static final class EmptyMultimap extends ImmutableMultimap<Object, Object> {
 
         @Override
-        public List<Object> get(Object key) {
-            return List.empty();
+        public Set<Object> get(Object key) {
+            return Set.empty();
         }
 
         @Override
@@ -142,12 +155,12 @@ public abstract class ListMultimap<K, @Out V>
         }
 
         @Override
-        public Set<Entry<Object, List<Object>>> collectionEntries() {
+        public Set<Entry<Object, Set<Object>>> collectionEntries() {
             return Set.empty();
         }
 
         @Override
-        public Traversable<Entry<Object, Object>> entries() {
+        public Set<Entry<Object, Object>> entries() {
             return Set.empty();
         }
     }
@@ -155,10 +168,10 @@ public abstract class ListMultimap<K, @Out V>
     /** Multimap backed by a hash wheel. */
     private static final class WheelMultimap<K, V> extends ImmutableMultimap<K, V> {
 
-        private final HashWheel<K, Entry<K, List<V>>> impl;
+        private final HashWheel<K, Entry<K, Set<V>>> impl;
         private final int size;
 
-        private WheelMultimap(HashWheel<K, Entry<K, List<V>>> impl) {
+        private WheelMultimap(HashWheel<K, Entry<K, Set<V>>> impl) {
             this.impl = impl;
             int count = 0;
             for (var i = impl.iterator(); i.hasNext(); ) {
@@ -168,9 +181,9 @@ public abstract class ListMultimap<K, @Out V>
         }
 
         @Override
-        public List<V> get(K key) {
+        public Set<V> get(K key) {
             var result = impl.get(key);
-            return result != null ? result.value() : List.empty();
+            return result != null ? result.value() : Set.empty();
         }
 
         @Override
@@ -184,7 +197,7 @@ public abstract class ListMultimap<K, @Out V>
         }
 
         @Override
-        public Set<Entry<K, List<V>>> collectionEntries() {
+        public Set<Entry<K, Set<V>>> collectionEntries() {
             return impl.toSet();
         }
     }

@@ -35,23 +35,31 @@ public interface MultimapMutator<K, V, C extends Collection<V>> {
      *
      * @return true iff the multimap was modified as a result of this operation.
      */
-    public boolean put(K key, V value);
+    public boolean add(K key, V value);
 
     /**
      * Puts key-value pair in this multimap.
      *
      * @return true iff the multimap was modified as a result of this operation.
      */
-    public default boolean put(Entry<K, V> entry) {
-        return put(entry.key(), entry.value());
+    public default boolean add(Entry<K, V> entry) {
+        return add(entry.key(), entry.value());
     }
 
     /**
      * Removes the key and all associated values from this multimap.
      *
-     * @return the collection of elements that were previously associated with given key.
+     * @return the collection of elements that was previously associated with given key.
      */
     public abstract C removeKey(K key);
+
+    /**
+     * Removes a single entry from this multimap.
+     * 
+     * @return {@code true} if the collection is changed as the result of this
+     *   operation, {@code false} otherwise.
+     */
+    public abstract boolean removeEntry(K key, V value);
 
     /** Removes all entries from this multimap. */
     public abstract void clear();

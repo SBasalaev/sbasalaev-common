@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022, 2023 Sergey Basalaev.
+ * Copyright 2015, 2022, 2023 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
 import ru.nsu.sbasalaev.API;
 import ru.nsu.sbasalaev.Opt;
-import ru.nsu.sbasalaev.annotation.Nullable;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
@@ -54,7 +53,11 @@ public abstract class Set<@Out T> extends Collection<T> {
         return (Set<T>) EMPTY;
     }
 
-    /** Set containing given elements. */
+    /**
+     * Set containing given elements.
+     * When there are duplicate elements according to {@code equals()},
+     * only the first of them is put in the resulting set.
+     */
     @SafeVarargs
     public static <T> Set<T> of(T... elements) {
         return fromTrustedArray(elements.clone());
@@ -68,15 +71,8 @@ public abstract class Set<@Out T> extends Collection<T> {
     static <T> Set<T> fromTrustedArray(T... elements) {
         return switch (elements.length) {
             case 0 -> empty();
-            case 1 -> new Set1<>(Objects.requireNonNull(elements[0]));
-            default-> {
-                var init = Support.make(elements, Object::equals, Object::hashCode);
-                if (init.origin().length == 1) {
-                    yield new Set1<>(init.origin()[0]);
-                } else {
-                    yield new ArraySet<>(init);
-                }
-            }
+            case 1 -> new SingletonSet<>(Objects.requireNonNull(elements[0]));
+            default-> new RegularSet(HashWheel.make(elements, Function.identity()));
         };
     }
 
@@ -116,7 +112,7 @@ public abstract class Set<@Out T> extends Collection<T> {
     private static <T> Set<T> buildUnion(Traversable<? extends Set<? extends T>> sets) {
         int len = API.sum(sets.map(Set::size));
         @SuppressWarnings("unchecked")
-        var array = (T[]) new Object[len];
+        T[] array = (T[]) new Object[len];
         int offset = 0;
         for (var set : sets) {
             set.fillArray(array, offset);
@@ -236,15 +232,19 @@ public abstract class Set<@Out T> extends Collection<T> {
 
     /* OVERRIDES */
 
-    /** Returns shallow immutable copy of this set. */
+    /**
+     * Returns shallow immutable copy of this set.
+     * May return itself if this set is immutable.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public final Set<T> clone() {
         if (isEmpty()) return empty();
-        if (this instanceof Immutable) return this;
-        var array = new Object[size()];
+        if (this instanceof ImmutableSet<T>) return this;
+        @SuppressWarnings("unchecked")
+        T[] array = (T[]) new Object[size()];
         fillArray(array, 0);
-        return fromTrustedArray((T[]) toArray());
+        return fromTrustedArray(array);
     }
 
     /**
@@ -271,10 +271,10 @@ public abstract class Set<@Out T> extends Collection<T> {
         }
         return hash;
     }
-
+    
     /* IMMUTABLE IMPLEMENTATIONS */
 
-    private static abstract class Immutable<@Out T> extends Set<T> {
+    private static abstract class ImmutableSet<@Out T> extends Set<T> {
 
         @Override
         public Set<T> toSet() {
@@ -288,8 +288,8 @@ public abstract class Set<@Out T> extends Collection<T> {
         }
     }
 
-    /** Singleton set with no elements. */
-    private static final class EmptySet extends Immutable<Object> implements EmptyCollection<Object> {
+    /** Set with no elements. */
+    private static final class EmptySet extends ImmutableSet<Object> implements EmptyCollection<Object> {
 
         private EmptySet() { }
 
@@ -342,11 +342,11 @@ public abstract class Set<@Out T> extends Collection<T> {
     }
 
     /** Set containing only one element. */
-    private static final class Set1<T> extends Immutable<T> {
+    private static final class SingletonSet<T> extends ImmutableSet<T> {
 
         private final T e1;
 
-        private Set1(T element) {
+        private SingletonSet(T element) {
             this.e1 = element;
         }
 
@@ -366,58 +366,43 @@ public abstract class Set<@Out T> extends Collection<T> {
         }
     }
 
-    /** Set backed by an array. */
-    private static final class ArraySet<@Out T> extends Immutable<T> {
+    /** Immutable set backed by a hash wheel. */
+    private static final class RegularSet<T> extends ImmutableSet<T> {
 
-        /** Elements of this set in the order given by constructor. */
-        private final T[] origin;
-        /** Expanded array sorted by hashcode suitable for searching. */
-        private final @Nullable T[] searched;
+        private final HashWheel<Object,T> wheel;
 
-        private ArraySet(Support.Initializer<T> initializer) {
-            this.origin = initializer.origin();
-            this.searched = initializer.searched();
+        private RegularSet(HashWheel<Object,T> wheel) {
+            this.wheel = wheel;
         }
 
         @Override
         public boolean contains(Object element) {
-            if (element == null) return false;
-            int len = searched.length;
-            int index = Math.floorMod(element.hashCode(), len);
-            while (true) {
-                var e = searched[index];
-                if (e == null) return false;
-                if (element.equals(e)) return true;
-                index += 1;
-                if (index == len) index = 0;
-            }
+            return wheel.get(element) != null;
         }
 
         @Override
         public int size() {
-            return origin.length;
+            return wheel.size();
         }
 
         @Override
         public Iterator<T> iterator() {
-            return Iterators.of(origin);
+            return wheel.iterator();
         }
 
         @Override
         public Object[] toArray() {
-            return origin.clone();
+            return wheel.toArray();
         }
 
         @Override
         public T[] toArray(IntFunction<T[]> arraySupplier) {
-            T[] result = arraySupplier.apply(origin.length);
-            System.arraycopy(origin, 0, result, 0, origin.length);
-            return result;
+            return wheel.toArray(arraySupplier);
         }
 
         @Override
         public void fillArray(Object[] array, int fromIndex) {
-            System.arraycopy(origin, 0, array, fromIndex, origin.length);
+            wheel.fillArray(array, fromIndex);
         }
     }
 }

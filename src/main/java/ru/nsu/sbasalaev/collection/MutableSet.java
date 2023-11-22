@@ -110,7 +110,6 @@ public abstract class MutableSet<T> extends Set<T> implements MutableCollection<
             return Set.fromTrustedArray((T[]) impl.toArray());
         }
 
-
         @Override
         public Object[] toArray() {
             return impl.toArray();

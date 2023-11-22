@@ -26,6 +26,7 @@ package ru.nsu.sbasalaev.collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
 import java.util.function.Supplier;
@@ -81,7 +82,7 @@ public abstract class MutableMap<K, V>
      *   key, {@code true} otherwise.
      */
     @Override
-    public boolean put(K key, V value) {
+    public boolean add(K key, V value) {
         var prev = set(key, value);
         return !prev.exists(value::equals);
     }
@@ -186,6 +187,11 @@ public abstract class MutableMap<K, V>
         }
 
         @Override
+        public boolean removeEntry(K key, V value) {
+            return impl.remove(key, value);
+        }
+
+        @Override
         public void clear() {
             impl.clear();
         }
@@ -201,7 +207,7 @@ public abstract class MutableMap<K, V>
                 @Override
                 public boolean contains(Object element) {
                     if (element instanceof Entry<?,?> entry) {
-                        var value = impl.get(entry.key());
+                        var value = impl.get((K) entry.key());
                         if (entry.value().equals(value)) {
                             return true;
                         }
@@ -217,6 +223,16 @@ public abstract class MutableMap<K, V>
                 @Override
                 public Iterator<Entry<K, V>> iterator() {
                     return Iterators.map(impl.entrySet().iterator(), e -> Entry.of(e.getKey(), e.getValue()));
+                }
+
+                @Override
+                public Object[] toArray() {
+                    return impl.entrySet().toArray();
+                }
+
+                @Override
+                public Entry<K, V>[] toArray(IntFunction<Entry<K, V>[]> arraySupplier) {
+                    return impl.entrySet().toArray(arraySupplier);
                 }
             };
         }

@@ -241,9 +241,12 @@ public abstract class List<@Out T> extends Collection<T> {
      * A view of this list that contains only elements starting from given offset.
      * If this list contains no more than {@code offset} elements the returned view is empty.
      * The returned list is a view that is affected immediately by the changes to this list.
+     *
+     * @param offset non-negative offset from the start of the list.
+     * @throws IllegalArgumentException if the offset is negative.
      */
     public List<T> from(int offset) {
-        Require.nonNegative(offset, "index");
+        Require.nonNegative(offset, "offset");
         if (offset == 0) return this;
         return new List<T>() {
             @Override
@@ -262,6 +265,9 @@ public abstract class List<@Out T> extends Collection<T> {
     /**
      * A view of this list that contains no more than {@code limit} elements.
      * The returned list is a view that is affected immediately by the changes to this list.
+     *
+     * @param limits maximum number of elements to take.
+     * @throws IllegalArgumentException if given limit is negative.
      */
     @Override
     public List<T> take(int limit) {
@@ -367,13 +373,13 @@ public abstract class List<@Out T> extends Collection<T> {
 
     /** Returns shallow immutable copy of this list. */
     @Override
-    @SuppressWarnings("unchecked")
     public final List<T> clone() {
         if (isEmpty()) return empty();
-        if (this instanceof Immutable) return this;
-        var array = new Object[size()];
+        if (this instanceof ImmutableList) return this;
+        @SuppressWarnings("unchecked")
+        T[] array = (T[]) new Object[size()];
         fillArray(array, 0);
-        return fromTrustedArray((T[]) toArray());
+        return fromTrustedArray(array);
     }
 
     /**
@@ -458,13 +464,14 @@ public abstract class List<@Out T> extends Collection<T> {
 
     /* IMPLEMENTATIONS */
 
-    private static abstract class Immutable<T> extends List<T> {
+    private static abstract class ImmutableList<T> extends List<T> {
 
-        private Immutable() { }
+        private ImmutableList() { }
 
         @Override
         public List<T> from(int offset) {
             if (offset >= size()) return empty();
+            if (offset == 0) return this;
             return super.from(offset);
         }
 
@@ -496,7 +503,7 @@ public abstract class List<@Out T> extends Collection<T> {
     }
 
     /** Empty list. */
-    private static final class EmptyList extends Immutable<Object> implements EmptyCollection<Object> {
+    private static final class EmptyList extends ImmutableList<Object> implements EmptyCollection<Object> {
 
         private EmptyList() { }
 
@@ -547,7 +554,7 @@ public abstract class List<@Out T> extends Collection<T> {
     }
 
     /** Immutable list backed by an array. */
-    private static final class ArrayList<@Out T> extends Immutable<T> {
+    private static final class ArrayList<T> extends ImmutableList<T> {
 
         private final T[] elements;
 
@@ -588,7 +595,7 @@ public abstract class List<@Out T> extends Collection<T> {
         }
     }
 
-    private static final class Repeat<T> extends Immutable<T> {
+    private static final class Repeat<T> extends ImmutableList<T> {
 
         private final T element;
         private final int size;
@@ -607,6 +614,26 @@ public abstract class List<@Out T> extends Collection<T> {
         @Override
         public int size() {
             return size;
+        }
+
+        @Override
+        public List<T> from(int offset) {
+            Require.nonNegative(offset, "offset");
+            if (offset >= size) return empty();
+            if (offset == 0) return this;
+            return new Repeat<>(element, size - offset);
+        }
+
+        @Override
+        public List<T> take(int limit) {
+            Require.nonNegative(limit, "limit");
+            if (limit >= size) return this;
+            return new Repeat<>(element, limit);
+        }
+
+        @Override
+        public List<T> reversed() {
+            return this;
         }
     }
 }

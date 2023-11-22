@@ -26,9 +26,9 @@ package ru.nsu.sbasalaev.collection;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
+import static ru.nsu.sbasalaev.API.maybe;
 import static ru.nsu.sbasalaev.API.some;
 import ru.nsu.sbasalaev.Opt;
-import ru.nsu.sbasalaev.annotation.Nullable;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
@@ -44,7 +44,7 @@ public abstract class Map<K, @Out V>
 
     private static final Map<?,?> EMPTY = new EmptyMap();
 
-    /** Empty map. */
+    /** Map with no entries. */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> empty() {
         return (Map<K, V>) EMPTY;
@@ -52,7 +52,7 @@ public abstract class Map<K, @Out V>
 
     /** Map containing given entry. */
     public static <K, V> Map<K, V> of(K key, V value) {
-        return new Map1<>(Objects.requireNonNull(key), Objects.requireNonNull(value));
+        return new SingletonMap<>(Objects.requireNonNull(key), Objects.requireNonNull(value));
     }
 
     /** Map containing given entries. */
@@ -105,18 +105,28 @@ public abstract class Map<K, @Out V>
         );
     }
 
-    /**
-     * Builder for maps with many entries.
-     */
+    /** Builder of immutable maps. */
     public static final class Builder<K, V> {
 
         private final MutableList<Entry<K,V>> entries = MutableList.empty();
 
         private Builder() { }
 
-        /** Adds entry to the map being built. */
+        /**
+         * Adds entry to the map being built.
+         * @return this builder.
+         */
         public Builder<K,V> add(K key, V value) {
             entries.add(Entry.of(key, value));
+            return this;
+        }
+
+        /**
+         * Adds entry to the map being built.
+         * @return this builder.
+         */
+        public Builder<K,V> add(Entry<K,V> entry) {
+            entries.add(entry);
             return this;
         }
 
@@ -126,6 +136,7 @@ public abstract class Map<K, @Out V>
          */
         @SuppressWarnings("unchecked")
         public Map<K, V> toMap() {
+            if (entries.size() == 0) return empty();
             return fromTrustedArray(entries.toArray(Entry[]::new));
         }
     }
@@ -136,7 +147,7 @@ public abstract class Map<K, @Out V>
     }
 
     /**
-     * Set containing given elements.
+     * Map containing given elements.
      * The array of elements is not cloned.
      */
     @SafeVarargs
@@ -145,17 +156,9 @@ public abstract class Map<K, @Out V>
             case 0 -> empty();
             case 1 -> {
                 var e = entries[0];
-                yield new Map1<>(Objects.requireNonNull(e.key()), Objects.requireNonNull(e.value()));
+                yield new SingletonMap<>(Objects.requireNonNull(e.key()), Objects.requireNonNull(e.value()));
             }
-            default-> {
-                var init = Support.make(entries, (e1, e2) -> e1.key().equals(e2.key()), Entry::keyHash);
-                if (init.origin().length == 1) {
-                    var e = init.origin()[0];
-                    yield new Map1<>(e.key(), e.value());
-                } else {
-                    yield new ArrayMap<>(init);
-                }
-            }
+            default-> new WheelMap<>(HashWheel.make(entries, Entry::key));
         };
     }
 
@@ -217,6 +220,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** The set of key-value associations in this map. */
+    @Override
     public abstract Set<Entry<K,V>> entries();
 
     @Override
@@ -246,6 +250,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** The set of keys that have an associated value in this map. */
+    @Override
     public Set<K> keys() {
         return new Set<>() {
             @Override
@@ -386,7 +391,7 @@ public abstract class Map<K, @Out V>
     @SuppressWarnings("unchecked")
     public final Map<K, V> clone() {
         if (isEmpty()) return empty();
-        if (this instanceof Immutable) return this;
+        if (this instanceof ImmutableMap) return this;
         var array = new Entry<?,?>[size()];
         entries().fillArray(array, 0);
         return fromTrustedArray((Entry<K,V>[]) array);
@@ -405,10 +410,10 @@ public abstract class Map<K, @Out V>
     }
 
     /* IMMUTABLE IMPLEMENTATIONS */
-    private static abstract class Immutable<K, @Out V> extends Map<K, V> { }
+    private static abstract class ImmutableMap<K, @Out V> extends Map<K, V> { }
 
     /** Singleton map with no elements. */
-    private static final class EmptyMap extends Immutable<Object, Object> {
+    private static final class EmptyMap extends ImmutableMap<Object, Object> {
 
         private EmptyMap() { }
 
@@ -440,12 +445,12 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map containing only one entry. */
-    private static final class Map1<K, V> extends Immutable<K,V> {
+    private static final class SingletonMap<K, V> extends ImmutableMap<K,V> {
 
         private final K key;
         private final V value;
 
-        Map1(K key, V value) {
+        SingletonMap(K key, V value) {
             this.key = key;
             this.value = value;
         }
@@ -471,42 +476,33 @@ public abstract class Map<K, @Out V>
         }
     }
 
-    /** Map backed by an array. */
-    private static final class ArrayMap<K, V> extends Immutable<K, V> {
+    /** Map backed by a hash wheel. */
+    private static final class WheelMap<K, V> extends ImmutableMap<K, V> {
 
-        /** Elements of this set in the order given by constructor. */
-        private final Entry<K,V>[] origin;
-        /** Expanded array sorted by hashcode suitable for searching. */
-        private final @Nullable Entry<K,V>[] searched;
+        private final HashWheel<K, Entry<K, V>> wheel;
 
-        ArrayMap(Support.Initializer<Entry<K,V>> initializer) {
-            this.origin = initializer.origin();
-            this.searched = initializer.searched();
+        private WheelMap(HashWheel<K, Entry<K, V>> impl) {
+            this.wheel = impl;
         }
 
         @Override
-        public Opt<V> get(@Nullable K key) {
-            if (key == null) return Opt.empty();
-            int len = searched.length;
-            int hash = key.hashCode();
-            int index = Math.floorMod(hash, len);
-            while (true) {
-                var e = searched[index];
-                if (e == null) return Opt.empty();
-                if (e.keyHash() == hash && e.key().equals(key)) return Opt.of(e.value());
-                index += 1;
-                if (index == len) index = 0;
-            }
+        public Opt<V> get(K key) {
+            return maybe(wheel.get(key)).mapped(Entry::value);
+        }
+
+        @Override
+        public boolean containsKey(K key) {
+            return wheel.get(key) != null;
         }
 
         @Override
         public Set<Entry<K, V>> entries() {
-            return Set.fromTrustedArray(origin);
+            return wheel.toSet();
         }
 
         @Override
         public int size() {
-            return origin.length;
+            return wheel.size();
         }
     }
 }

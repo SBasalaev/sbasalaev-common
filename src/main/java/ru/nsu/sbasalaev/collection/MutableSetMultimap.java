@@ -26,38 +26,39 @@ package ru.nsu.sbasalaev.collection;
 import java.util.function.Function;
 
 /**
- * Mutable mapping of keys to lists of values.
+ * Mutable mapping of keys to sets of values.
  *
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class MutableListMultimap<K, V>
-    extends ListMultimap<K, V>
-    implements MultimapMutator<K, V, List<V>> {
+public abstract class MutableSetMultimap<K, V>
+    extends SetMultimap<K, V>
+    implements MultimapMutator<K, V, Set<V>> {
 
     /** Returns new mutable multimap that is initially empty. */
-    public static <K, V> MutableListMultimap<K, V> empty() {
+    public static <K, V> MutableSetMultimap<K, V> empty() {
         return new DefaultImpl<>();
     }
 
-    private static final class DefaultImpl<K,V> extends MutableListMultimap<K, V> {
+    private static final class DefaultImpl<K,V> extends MutableSetMultimap<K, V> {
 
-        private final MutableMap<K, MutableList<V>> impl = MutableMap.empty();
+        private final MutableMap<K, MutableSet<V>> impl = MutableMap.empty();
         private int size;
 
         private DefaultImpl() { }
 
         @Override
-        public List<V> get(K key) {
+        public Set<V> get(K key) {
             return impl.get(key)
-                .mapped(Function.<List<V>>identity())
-                .orElseGet(List::empty);
+                .mapped(Function.<Set<V>>identity())
+                .orElseGet(Set::empty);
         }
 
         @Override
         public boolean add(K key, V value) {
-            size++;
-            return impl.createIfMissing(key, MutableList::empty).add(value);
+            boolean result = impl.createIfMissing(key, MutableSet::empty).add(value);
+            if (result) size++;
+            return result;
         }
 
         @Override
@@ -66,31 +67,26 @@ public abstract class MutableListMultimap<K, V>
         }
 
         @Override
-        public Set<Entry<K, List<V>>> collectionEntries() {
-            return (Set<Entry<K, List<V>>>) (Set<?>) impl.entries();
+        public Set<Entry<K, Set<V>>> collectionEntries() {
+            return (Set<Entry<K, Set<V>>>) (Set<?>) impl.entries();
         }
 
         @Override
-        public List<V> removeKey(K key) {
-            for (var list : impl.removeKey(key)) {
-                size -= list.size();
-                return list;
+        public Set<V> removeKey(K key) {
+            for (var set : impl.removeKey(key)) {
+                size -= set.size();
+                return set;
             }
-            return List.empty();
+            return Set.empty();
         }
 
         @Override
         public boolean removeEntry(K key, V value) {
-            for (var list : impl.get(key)) {
-                int index = list.findIndex(value::equals);
-                if (index < 0) return false;
-                if (list.size() == 1) {
-                    impl.removeKey(key);
-                } else {
-                    list.removeAt(index);
-                }
-                size--;
-                return true;
+            for (var set : impl.get(key)) {
+                boolean result = set.remove(value);
+                if (result) size--;
+                if (set.isEmpty()) impl.removeKey(key);
+                return result;
             }
             return false;
         }

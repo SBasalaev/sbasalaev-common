@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import ru.nsu.sbasalaev.API;
 import ru.nsu.sbasalaev.Require;
 import ru.nsu.sbasalaev.annotation.Nullable;
 
@@ -65,19 +64,29 @@ public final class Iterators {
     /** Iterator over given elements in given order. */
     @SafeVarargs
     public static <T> Iterator<T> of(T... elements) {
-        if (elements.length == 0) return empty();
+        return ofRange(elements, 0, elements.length);
+    }
+
+    /**
+     * Iterator over range of given array.
+     * 
+     * @since 3.2
+     */
+    public static <T> Iterator<T> ofRange(T[] elements, int offset, int size) {
+        Objects.checkFromIndexSize(offset, size, elements.length);
+        if (size == 0) return empty();
         return new Iterator<T>() {
-            private int nextIndex = 0;
+            private int nextIndex = offset;
 
             @Override
             public boolean hasNext() {
-                return nextIndex < elements.length;
+                return nextIndex < size;
             }
 
             @Override
             public T next() {
                 int n = nextIndex;
-                if (n >= elements.length) {
+                if (n >= size) {
                     throw new NoSuchElementException();
                 }
                 nextIndex = n + 1;
