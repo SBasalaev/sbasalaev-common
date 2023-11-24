@@ -24,6 +24,7 @@
 package ru.nsu.sbasalaev.collection;
 
 import java.util.function.Function;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Mutable mapping of keys to sets of values.
@@ -31,16 +32,20 @@ import java.util.function.Function;
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class MutableSetMultimap<K, V>
+public abstract class MutableSetMultimap<K extends @NonNull Object, V extends @NonNull Object>
     extends SetMultimap<K, V>
     implements MultimapMutator<K, V, Set<V>> {
 
+    /** Constructor for subclasses. */
+    public MutableSetMultimap() { }
+
     /** Returns new mutable multimap that is initially empty. */
-    public static <K, V> MutableSetMultimap<K, V> empty() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> MutableSetMultimap<K, V> empty() {
         return new DefaultImpl<>();
     }
 
-    private static final class DefaultImpl<K,V> extends MutableSetMultimap<K, V> {
+    private static final class DefaultImpl<K extends @NonNull Object, V extends @NonNull Object>
+            extends MutableSetMultimap<K, V> {
 
         private final MutableMap<K, MutableSet<V>> impl = MutableMap.empty();
         private int size;
@@ -48,7 +53,7 @@ public abstract class MutableSetMultimap<K, V>
         private DefaultImpl() { }
 
         @Override
-        public Set<V> get(K key) {
+        public Set<V> get(Object key) {
             return impl.get(key)
                 .mapped(Function.<Set<V>>identity())
                 .orElseGet(Set::empty);

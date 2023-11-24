@@ -23,15 +23,18 @@
  */
 package ru.nsu.sbasalaev.collection;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Common superclass for traversables that only serve as chained views.
  *
  * @author Sergey Basalaev
  */
-abstract class AbstractView<T> implements Traversable<T> {
+abstract class AbstractView<T extends @NonNull Object> implements Traversable<T> {
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         throw new AssertionError("Not comparable");
     }
 

@@ -24,31 +24,36 @@
 package ru.nsu.sbasalaev.collection;
 
 import java.util.Iterator;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
  *
  * @author Sergey Basalaev
  */
-public abstract class SetMultimap<K, @Out V>
+public abstract class SetMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
     extends Multimap<K, V, Set<V>>
     implements Cloneable {
 
     /* CONSTRUCTORS */
 
+    /** Constructor for subclasses. */
+    public SetMultimap() { }
+
     private static final SetMultimap<?, ?> EMPTY = new EmptyMultimap();
 
     /** Empty list multimap. */
-    public static <K,V> SetMultimap<K, V> empty() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> SetMultimap<K, V> empty() {
         return (SetMultimap<K, V>) EMPTY;
     }
 
     /** Builder of immutable list multimaps. */
-    public static <K,V> Builder<K,V> build() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> Builder<K,V> build() {
         return new Builder<>();
     }
 
-    public static final class Builder<K, V> {
+    public static final class Builder<K extends @NonNull Object, V extends @NonNull Object> {
 
         private final MutableSetMultimap<K, V> collector = MutableSetMultimap.empty();
 
@@ -76,7 +81,8 @@ public abstract class SetMultimap<K, @Out V>
         }
     }
 
-    private static <K,V> SetMultimap<K,V> fromTrustedArray(Entry<K, Set<V>>[] entries) {
+    private static <K extends @NonNull Object, V extends @NonNull Object>
+            SetMultimap<K,V> fromTrustedArray(Entry<K, Set<V>>[] entries) {
         if (entries.length == 0) return empty();
         return new WheelMultimap<>(HashWheel.make(entries, Entry::key));
     }
@@ -85,12 +91,12 @@ public abstract class SetMultimap<K, @Out V>
 
     /** Set of values associated with given key in this multimap. */
     @Override
-    public abstract Set<V> get(K key);
+    public abstract Set<V> get(Object key);
 
     /* OVERRIDEN MEMBERS */
 
     @Override
-    public boolean containsEntry(K key, Object value) {
+    public boolean containsEntry(Object key, Object value) {
         return get(key).contains(value);
     }
 
@@ -127,7 +133,7 @@ public abstract class SetMultimap<K, @Out V>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof SetMultimap<?,?> map)) return false;
         return collectionEntries().equals(map.collectionEntries());
@@ -135,12 +141,13 @@ public abstract class SetMultimap<K, @Out V>
 
     /* IMMUTABLE IMPLEMENTATIONS */
 
-    private static abstract class ImmutableMultimap<K, @Out V> extends SetMultimap<K, V> { }
+    private static abstract class ImmutableMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
+            extends SetMultimap<K, V> { }
 
-    private static final class EmptyMultimap extends ImmutableMultimap<Object, Object> {
+    private static final class EmptyMultimap extends ImmutableMultimap<Object, @NonNull Void> {
 
         @Override
-        public Set<Object> get(Object key) {
+        public Set<@NonNull Void> get(Object key) {
             return Set.empty();
         }
 
@@ -160,18 +167,19 @@ public abstract class SetMultimap<K, @Out V>
         }
 
         @Override
-        public Set<Entry<Object, Set<Object>>> collectionEntries() {
+        public Set<Entry<Object, Set<@NonNull Void>>> collectionEntries() {
             return Set.empty();
         }
 
         @Override
-        public Set<Entry<Object, Object>> entries() {
+        public Set<Entry<Object, @NonNull Void>> entries() {
             return Set.empty();
         }
     }
 
     /** Multimap backed by a hash wheel. */
-    private static final class WheelMultimap<K, V> extends ImmutableMultimap<K, V> {
+    private static final class WheelMultimap<K extends @NonNull Object, V extends @NonNull Object>
+            extends ImmutableMultimap<K, V> {
 
         private final HashWheel<K, Entry<K, Set<V>>> impl;
         private final int size;
@@ -186,7 +194,7 @@ public abstract class SetMultimap<K, @Out V>
         }
 
         @Override
-        public Set<V> get(K key) {
+        public Set<V> get(Object key) {
             var result = impl.get(key);
             return result != null ? result.value() : Set.empty();
         }

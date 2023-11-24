@@ -30,6 +30,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import ru.nsu.sbasalaev.API;
 import static ru.nsu.sbasalaev.API.none;
 import static ru.nsu.sbasalaev.API.some;
@@ -47,7 +49,7 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public interface Traversable<@Out T> extends Iterable<T> {
+public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T> {
 
     /* TRANSFORMERS */
 
@@ -73,7 +75,7 @@ public interface Traversable<@Out T> extends Iterable<T> {
      *
      * @see Iterators#limit(java.util.Iterator, int) 
      */
-    default Traversable<T> take(int limit) {
+    default Traversable<T> take(@NonNegative int limit) {
         Require.nonNegative(limit, "limit");
         return new AbstractView<T>() {
             @Override
@@ -104,7 +106,7 @@ public interface Traversable<@Out T> extends Iterable<T> {
      * The returned traversable is a view of this object.
      */
     @SuppressWarnings("unchecked")
-    default <U> Traversable<U> narrow(Class<U> clazz) {
+    default <U extends @NonNull Object> Traversable<U> narrow(Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz");
         return (Traversable<U>) filter(clazz::isInstance);
     }
@@ -116,7 +118,7 @@ public interface Traversable<@Out T> extends Iterable<T> {
      *
      * @see Iterators#map(java.util.Iterator, java.util.function.Function) 
      */
-    default <R> Traversable<R> map(Function<? super T, ? extends R> mapping) {
+    default <R extends @NonNull Object> Traversable<R> map(Function<? super T, ? extends R> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return new AbstractView<R>() {
             @Override
@@ -163,7 +165,7 @@ public interface Traversable<@Out T> extends Iterable<T> {
 
     /** Applies {@code mapping} to the elements and chains the resulting traversables together. */
     @SuppressWarnings("unchecked")
-    default <R> Traversable<R> chainMap(Function<? super T, ? extends Traversable<R>> mapping) {
+    default <R extends @NonNull Object> Traversable<R> chainMap(Function<? super T, ? extends Traversable<R>> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return (Traversable<R>) map(mapping).<Traversable<?>>fold(List.empty(), Traversable::chain);
     }
@@ -203,7 +205,7 @@ public interface Traversable<@Out T> extends Iterable<T> {
      * Starting from the {@code first}, applies {@code combine} to elements of the collection returning result.
      * The order of elements is determined by the iterator.
      */
-    default <R> R fold(R first, BiFunction<? super R, ? super T, ? extends R> combine) {
+    default <R extends @NonNull Object> R fold(R first, BiFunction<? super R, ? super T, ? extends R> combine) {
         Objects.requireNonNull(combine, "combine");
         var result = first;
         for (var item : this) {
@@ -244,7 +246,7 @@ public interface Traversable<@Out T> extends Iterable<T> {
      * If the traversable has more than {@code Integer.MAX_VALUE}
      * elements, returns {@code Integer.MAX_VALUE}.
      */
-    public default int count() {
+    public default @NonNegative int count() {
         int count = 0;
         for (var __ : this) {
             count++;
@@ -270,7 +272,8 @@ public interface Traversable<@Out T> extends Iterable<T> {
      * @param <K> type of the classifier key.
      * @param classifier function that assigns keys to elements of this traversable.
      */
-    public default <K> Map<K, ? extends List<T>> groupedBy(Function<? super T, ? extends K> classifier) {
+    public default <K extends @NonNull Object>
+            Map<K, ? extends List<T>> groupedBy(Function<? super T, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         var map = MutableMap.<K, MutableList<T>>empty();
         for (var item : this) {

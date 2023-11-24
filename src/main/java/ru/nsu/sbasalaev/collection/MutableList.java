@@ -30,29 +30,33 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * List that can be mutated.
  *
  * @author Sergey Basalaev
  */
-public abstract class MutableList<T> extends List<T> implements MutableCollection<T> {
+public abstract class MutableList<T extends @NonNull Object>
+        extends List<T> implements MutableCollection<T> {
 
-    /* CONSTRUCTOR */
+    /* CONSTRUCTORS */
+
+    MutableList() { }
 
     /** New mutable list that is initially empty. */
-    public static <T> MutableList<T> empty() {
+    public static <T extends @NonNull Object> MutableList<T> empty() {
         return new DefaultImpl<>();
     }
 
     /** New mutable list that initially contains given elements. */
     @SafeVarargs
-    public static <T> MutableList<T> of(T... elements) {
+    public static <T extends @NonNull Object> MutableList<T> of(T... elements) {
         return of (List.of(elements));
     }
 
     /** New mutable list that initially contains given elements. */
-    public static <T> MutableList<T> of(Collection<? extends T> elements) {
+    public static <T extends @NonNull Object> MutableList<T> of(Collection<? extends T> elements) {
         var list = new DefaultImpl<T>();
         list.addAll(elements);
         return list;
@@ -139,7 +143,7 @@ public abstract class MutableList<T> extends List<T> implements MutableCollectio
 
     /* DEFAULT IMPLEMENTATION */
 
-    private static final class DefaultImpl<T> extends MutableList<T> {
+    private static final class DefaultImpl<T extends @NonNull Object> extends MutableList<T> {
 
         private final ArrayList<T> impl;
 

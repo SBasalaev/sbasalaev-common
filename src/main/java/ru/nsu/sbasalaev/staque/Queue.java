@@ -23,6 +23,8 @@
  */
 package ru.nsu.sbasalaev.staque;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * First-in-first-out element feed.
  *
@@ -30,10 +32,10 @@ package ru.nsu.sbasalaev.staque;
  *
  * @author Sergey Basalaev
  */
-public interface Queue<T> extends Feed<T> {
+public interface Queue<T extends @NonNull Object> extends Feed<T> {
 
     /** Returns new queue that is initially empty. */
-    public static <T> Queue<T> empty() {
+    public static <T extends @NonNull Object> Queue<T> empty() {
         return new DefaultDeque<>();
     }
 

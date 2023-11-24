@@ -24,6 +24,8 @@
 package ru.nsu.sbasalaev.collection;
 
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
@@ -31,13 +33,13 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public abstract class Entry<@Out K, @Out V> {
+public abstract class Entry<@Out K extends @NonNull Object, @Out V extends @NonNull Object> {
 
     /**
      * Returns map entry with given key and value.
      * The entry is immutable and caches key hash.
      */
-    public static <K,V> Entry<K,V> of(K key, V value) {
+    public static <K extends @NonNull Object, V extends @NonNull Object> Entry<K,V> of(K key, V value) {
         int hash = key.hashCode();
         return new Entry<K, V>() {
             @Override
@@ -75,7 +77,7 @@ public abstract class Entry<@Out K, @Out V> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Entry<?,?> entry)) return false;
         return key().equals(entry.key()) && value().equals(entry.value());

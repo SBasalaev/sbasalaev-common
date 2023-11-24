@@ -25,13 +25,14 @@ package ru.nsu.sbasalaev.staque;
 
 import java.util.ArrayDeque;
 import java.util.Iterator;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Deque implementation.
  *
  * @author Sergey Basalaev
  */
-final class DefaultDeque<T> implements Deque<T>, Iterator<T> {
+final class DefaultDeque<T extends @NonNull Object> implements Deque<T>, Iterator<T> {
 
     private final ArrayDeque<T> impl;
 

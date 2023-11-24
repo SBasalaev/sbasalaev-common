@@ -25,13 +25,14 @@ package ru.nsu.sbasalaev.collection;
 
 import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Common methods of {@code MutableList} and {@code MutableSet}.
  *
  * @author Sergey Basalaev
  */
-public interface MutableCollection<T> extends Traversable<T> {
+public interface MutableCollection<T extends @NonNull Object> extends Traversable<T> {
 
     /**
      * Adds element to this collection.

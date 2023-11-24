@@ -24,6 +24,8 @@
 package ru.nsu.sbasalaev.collection;
 
 import java.util.Iterator;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.Opt;
 import ru.nsu.sbasalaev.annotation.Out;
 
@@ -44,13 +46,16 @@ import ru.nsu.sbasalaev.annotation.Out;
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class Multimap<K, @Out V, @Out C extends Collection<V>> {
+public abstract class Multimap<K extends @NonNull Object, @Out V extends @NonNull Object, @Out C extends @NonNull Collection<V>> {
+
+    /** Constructor for subclasses. */
+    public Multimap() { }
 
     /** Collection of values associated with given key in this multimap. */
-    public abstract C get(K key);
+    public abstract C get(Object key);
 
     /** Whether given key is present in this map. */
-    public boolean containsKey(K key) {
+    public boolean containsKey(Object key) {
         return get(key).nonEmpty();
     }
 
@@ -60,7 +65,7 @@ public abstract class Multimap<K, @Out V, @Out C extends Collection<V>> {
     }
 
     /** Whether given key corresponds to given value in this map. */
-    public boolean containsEntry(K key, Object value) {
+    public boolean containsEntry(Object key, Object value) {
         return get(key).exists(value::equals);
     }
 
@@ -82,7 +87,7 @@ public abstract class Multimap<K, @Out V, @Out C extends Collection<V>> {
         return new Set<K>() {
             @Override
             public boolean contains(Object element) {
-                return containsKey((K) element);
+                return containsKey(element);
             }
 
             @Override
@@ -138,7 +143,7 @@ public abstract class Multimap<K, @Out V, @Out C extends Collection<V>> {
      * since they return unequal empty collections.
      */
     @Override
-    public abstract boolean equals(Object obj);
+    public abstract boolean equals(@Nullable Object obj);
 
     /**
      * Hash code of the multimap.

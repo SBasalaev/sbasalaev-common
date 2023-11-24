@@ -38,7 +38,7 @@ public class MutableSetMultimapTest {
 
     public MutableSetMultimapTest() { }
 
-    private MutableSetMultimap<String,String> map;
+    private MutableSetMultimap<String,String> map = MutableSetMultimap.empty();
 
     @BeforeEach
     public void initMultimap() {

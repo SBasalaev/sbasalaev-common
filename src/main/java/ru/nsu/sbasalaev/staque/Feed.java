@@ -25,6 +25,7 @@ package ru.nsu.sbasalaev.staque;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
@@ -36,7 +37,7 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public interface Feed<@Out T> extends Iterable<T> {
+public interface Feed<@Out T extends @NonNull Object> extends Iterable<T> {
 
     /** Returns true if the feed is empty. */
     boolean isEmpty();

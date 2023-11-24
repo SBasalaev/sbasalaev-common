@@ -31,6 +31,7 @@ import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import static ru.nsu.sbasalaev.API.none;
 import static ru.nsu.sbasalaev.API.some;
 import ru.nsu.sbasalaev.Opt;
@@ -40,7 +41,7 @@ import ru.nsu.sbasalaev.Opt;
  *
  * @author Sergey Basalaev
  */
-public abstract class MutableMap<K, V>
+public abstract class MutableMap<K extends @NonNull Object, V extends @NonNull Object>
     extends Map<K, V>
     implements MultimapMutator<K, V, Opt<V>> {
 
@@ -50,12 +51,13 @@ public abstract class MutableMap<K, V>
     public MutableMap() { }
 
     /** Returns new mutable map that is initially empty. */
-    public static <K,V> MutableMap<K,V> empty() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> MutableMap<K,V> empty() {
         return new DefaultImpl<>();
     }
 
     /** Returns new mutable map that initially contains given values. */
-    public static <K,V> MutableMap<K,V> copyOf(Map<K,V> map) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            MutableMap<K,V> copyOf(Map<K,V> map) {
         MutableMap<K,V> result = empty();
         for (var entry : map.entries()) {
             result.set(entry.key(), entry.value());
@@ -163,7 +165,8 @@ public abstract class MutableMap<K, V>
 
     /* IMPLEMENTATION */
 
-    private static final class DefaultImpl<K, V> extends MutableMap<K, V> {
+    private static final class DefaultImpl<K extends @NonNull Object, V extends @NonNull Object>
+            extends MutableMap<K, V> {
 
         private final HashMap<K, V> impl;
 
@@ -172,7 +175,7 @@ public abstract class MutableMap<K, V>
         }
 
         @Override
-        public Opt<V> get(K key) {
+        public Opt<V> get(Object key) {
             return Opt.ofNullable(impl.get(Objects.requireNonNull(key)));
         }
 

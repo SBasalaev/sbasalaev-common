@@ -29,11 +29,14 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import ru.nsu.sbasalaev.Opt;
 import ru.nsu.sbasalaev.Require;
-import ru.nsu.sbasalaev.annotation.Nullable;
 
 /**
  * Factory methods for iterators.
+ * All iterators produced by this class are read only and do not support remove().
  *
  * @author Sergey Basalaev
  */
@@ -41,14 +44,14 @@ public final class Iterators {
 
     private Iterators() { }
 
-    private static final Iterator<?> EMPTY = new Iterator<>() {
+    private static final Iterator<?> EMPTY = new Iterator<@NonNull Void>() {
         @Override
         public boolean hasNext() {
             return false;
         }
 
         @Override
-        public Object next() {
+        public @NonNull Void next() {
             throw new NoSuchElementException();
         }
     };
@@ -57,13 +60,13 @@ public final class Iterators {
 
     /** Empty iterator. */
     @SuppressWarnings("unchecked")
-    public static <T> Iterator<T> empty() {
+    public static <T extends @Nullable Object> Iterator<T> empty() {
         return (Iterator<T>) EMPTY;
     }
 
     /** Iterator over given elements in given order. */
     @SafeVarargs
-    public static <T> Iterator<T> of(T... elements) {
+    public static <T extends @Nullable Object> Iterator<T> of(T... elements) {
         return ofRange(elements, 0, elements.length);
     }
 
@@ -72,7 +75,7 @@ public final class Iterators {
      * 
      * @since 3.2
      */
-    public static <T> Iterator<T> ofRange(T[] elements, int offset, int size) {
+    public static <T extends @Nullable Object> Iterator<T> ofRange(T[] elements, int offset, int size) {
         Objects.checkFromIndexSize(offset, size, elements.length);
         if (size == 0) return empty();
         return new Iterator<T>() {
@@ -116,8 +119,28 @@ public final class Iterators {
 
     /* TRANSFORMERS */
 
+    /**
+     * Wraps elements produced by given iterator into {@code Opt} values.
+     * @since 3.2
+     */
+    public static <T extends @NonNull Object>
+            Iterator<Opt<T>> wrapped(Iterator<@Nullable T> iterator) {
+        return new Iterator<Opt<T>>() {
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            @Override
+            public Opt<T> next() {
+                return Opt.ofNullable(iterator.next());
+            }
+        };
+    }
+
     /** Filters out iterator elements that do not satisfy {@code condition}. */
-    public static <T> Iterator<T> filter(Iterator<T> iterator, Predicate<? super T> condition) {
+    public static <T extends @Nullable Object>
+            Iterator<T> filter(Iterator<T> iterator, Predicate<? super T> condition) {
         Objects.requireNonNull(iterator, "iterator");
         Objects.requireNonNull(condition, "condition");
         return new Iterator<T>() {
@@ -125,15 +148,12 @@ public final class Iterators {
             private boolean hasNextItem = false;
 
             private boolean fetchNext() {
-                if (hasNextItem) {
-                    return true;
-                }
+                if (hasNextItem) return true;
                 while (iterator.hasNext()) {
                     T item = iterator.next();
                     if (condition.test(item)) {
                         nextItem = item;
-                        hasNextItem = true;
-                        return true;
+                        return hasNextItem = true;
                     }
                 }
                 return false;
@@ -144,6 +164,9 @@ public final class Iterators {
                 return fetchNext();
             }
 
+            // works correctly, but the checker cannot cast
+            // from @Nullable T to just T (which still may be nullable).
+            @SuppressWarnings("nullness")
             @Override
             public T next() {
                 if (!fetchNext()) {
@@ -156,7 +179,8 @@ public final class Iterators {
     }
 
     /** Applies {@code mapping} to all elements of {@code iterator}. */
-    public static <T, R> Iterator<R> map(Iterator<T> iterator, Function<? super T, ? extends R> mapping) {
+    public static <T extends @Nullable Object, R extends @Nullable Object>
+            Iterator<R> map(Iterator<T> iterator, Function<? super T, ? extends R> mapping) {
         Objects.requireNonNull(iterator, "iterator");
         Objects.requireNonNull(mapping, "mapping");
         return new Iterator<R>() {
@@ -182,7 +206,8 @@ public final class Iterators {
      * The result first yields elements of the {@code first} iterator,
      * and once it is exhausted, elements of the {@code second}.
      */
-    public static <T> Iterator<T> chain(Iterator<? extends T> first, Iterator<? extends T> second) {
+    public static <T extends @Nullable Object>
+            Iterator<T> chain(Iterator<? extends T> first, Iterator<? extends T> second) {
         Objects.requireNonNull(first, "first");
         Objects.requireNonNull(second, "second");
         return new Iterator<T>() {
@@ -193,13 +218,18 @@ public final class Iterators {
 
             @Override
             public T next() {
-                return first.hasNext() ? first.next() : second.next();
+                if (first.hasNext()) {
+                    return first.next();
+                } else {
+                    return second.next();
+                }
             }
         };
     }
 
     /** Combines values produced by iterators using {@code combiner}. */
-    public static <T,U,R> Iterator<R> zipBy(Iterator<T> first, Iterator<U> second,
+    public static <T extends @Nullable Object, U extends @Nullable Object, R extends @Nullable Object>
+            Iterator<R> zipBy(Iterator<T> first, Iterator<U> second,
             BiFunction<? super T, ? super U, ? extends R> combiner) {
         Objects.requireNonNull(first, "first");
         Objects.requireNonNull(second, "second");
@@ -218,7 +248,8 @@ public final class Iterators {
     }
 
     /** Limit number of elements produced by {@code iterator} by {@code cap}. */
-    public static <T> Iterator<T> limit(Iterator<T> iterator, int cap) {
+    public static <T extends @Nullable Object>
+            Iterator<T> limit(Iterator<T> iterator, int cap) {
         Objects.requireNonNull(iterator, "iterator");
         Require.nonNegative(cap, "cap");
         return new Iterator<T>() {
@@ -240,44 +271,45 @@ public final class Iterators {
         };
     }
 
-    public static <T> Iterator<T> takeWhile(Iterator<T> iterator, Predicate<? super T> condition) {
+    public static <T extends @Nullable Object>
+            Iterator<T> takeWhile(Iterator<T> iterator, Predicate<? super T> condition) {
         Objects.requireNonNull(iterator, "iterator");
         Objects.requireNonNull(condition, "condition");
         return new Iterator<T>() {
-            private T nextItem;
-            private boolean holds;
+            private @Nullable T nextItem = null;
+            private boolean hasNextItem = false;
+            private boolean conditionHolds = true;
 
-            {
-                fetchNext();
-            }
-
-            private void fetchNext() {
-                if (iterator.hasNext()) {
-                    T item = iterator.next();
-                    if (condition.test(item)) {
-                        holds = true;
-                        nextItem = item;
-                    } else {
-                        holds = false;
-                    }
+            private boolean fetchNext() {
+                if (hasNextItem) return true;
+                if (!conditionHolds) return false;
+                if (!iterator.hasNext()) return false;
+                T item = iterator.next();
+                if (condition.test(item)) {
+                    hasNextItem = true;
+                    nextItem = item;
+                    return true;
                 } else {
-                    holds = false;
+                    conditionHolds = false;
+                    return false;
                 }
             }
 
             @Override
             public boolean hasNext() {
-                return holds;
+                return fetchNext();
             }
 
+            // works correctly, but the checker cannot cast
+            // from @Nullable T to just T (which still may be nullable).
+            @SuppressWarnings("nullness")
             @Override
             public T next() {
-                if (!holds) {
+                if (!fetchNext()) {
                     throw new NoSuchElementException();
                 }
-                T item = nextItem;
-                fetchNext();
-                return item;
+                hasNextItem = false;
+                return nextItem;
             }
         };
     }

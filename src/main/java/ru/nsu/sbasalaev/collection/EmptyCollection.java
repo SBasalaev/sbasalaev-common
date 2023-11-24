@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import ru.nsu.sbasalaev.Require;
 
 /**
@@ -35,36 +36,37 @@ import ru.nsu.sbasalaev.Require;
  *
  * @author Sergey Basalaev
  */
-interface EmptyCollection<T> extends Traversable<T> {
+interface EmptyCollection extends Traversable<@NonNull Void> {
 
     @Override
-    default Traversable<T> takeWhile(Predicate<? super T> condition) {
+    default Traversable<@NonNull Void> takeWhile(Predicate<? super @NonNull Void> condition) {
         Objects.requireNonNull(condition, "condition");
         return this;
     }
 
     @Override
-    default Traversable<T> take(int limit) {
+    default Traversable<@NonNull Void> take(int limit) {
         Require.nonNegative(limit, "limit");
         return this;
     }
 
     @Override
-    default Traversable<T> filter(Predicate<? super T> condition) {
+    default Traversable<@NonNull Void> filter(Predicate<? super @NonNull Void> condition) {
         Objects.requireNonNull(condition, "condition");
         return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default <U> Traversable<U> narrow(Class<U> clazz) {
+    default <U extends @NonNull Object> Traversable<U> narrow(Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz");
         return (Traversable<U>) this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default <R> Traversable<R> map(Function<? super T, ? extends R> mapping) {
+    default <R extends @NonNull Object>
+            Traversable<R> map(Function<? super @NonNull Void, ? extends R> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return (Traversable<R>) this;
     }
@@ -76,13 +78,14 @@ interface EmptyCollection<T> extends Traversable<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    default <R> Traversable<R> chainMap(Function<? super T, ? extends Traversable<R>> mapping) {
+    default <R extends @NonNull Object>
+            Traversable<R> chainMap(Function<? super @NonNull Void, ? extends Traversable<R>> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return (Traversable<R>) this;
     }
 
     @Override
-    default Iterator<T> iterator() {
+    default Iterator<@NonNull Void> iterator() {
         return Iterators.empty();
     }
 
@@ -97,13 +100,14 @@ interface EmptyCollection<T> extends Traversable<T> {
     }
 
     @Override
-    default <K> Map<K, ? extends List<T>> groupedBy(Function<? super T, ? extends K> classifier) {
+    default <K extends @NonNull Object>
+            Map<K, ? extends List<@NonNull Void>> groupedBy(Function<? super @NonNull Void, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         return Map.empty();
     }
 
     @Override
-    default List<T> sortedBy(Comparator<? super T> comparing) {
+    default List<@NonNull Void> sortedBy(Comparator<? super @NonNull Void> comparing) {
         Objects.requireNonNull(comparing, "comparing");
         return List.empty();
     }

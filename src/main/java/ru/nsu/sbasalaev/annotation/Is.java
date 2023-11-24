@@ -28,8 +28,8 @@ import java.lang.annotation.*;
 /**
  * Annotates types that have a fixed list of subtypes.
  * <p>
- * Processor for this annotation generates visitor
- * and methods for typesafe pattern matching.
+ * Since 3.2 visitor is no longer generated for types annotated with
+ * this annotation. It will be removed in future releases.
  * </p>
  *
  * @since 2.0
@@ -43,7 +43,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Deprecated(since = "Java 17")
+@Deprecated(since = "Java 17", forRemoval = true)
 public @interface Is {
     /** List of case subclasses of the annotated class. */
     Class<?>[] value();

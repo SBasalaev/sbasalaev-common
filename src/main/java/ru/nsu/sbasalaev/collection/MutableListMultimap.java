@@ -24,6 +24,7 @@
 package ru.nsu.sbasalaev.collection;
 
 import java.util.function.Function;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Mutable mapping of keys to lists of values.
@@ -31,16 +32,20 @@ import java.util.function.Function;
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class MutableListMultimap<K, V>
+public abstract class MutableListMultimap<K extends @NonNull Object, V extends @NonNull Object>
     extends ListMultimap<K, V>
     implements MultimapMutator<K, V, List<V>> {
 
+    /** Constructor for subclasses. */
+    public MutableListMultimap() { }
+
     /** Returns new mutable multimap that is initially empty. */
-    public static <K, V> MutableListMultimap<K, V> empty() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> MutableListMultimap<K, V> empty() {
         return new DefaultImpl<>();
     }
 
-    private static final class DefaultImpl<K,V> extends MutableListMultimap<K, V> {
+    private static final class DefaultImpl<K extends @NonNull Object, V extends @NonNull Object>
+            extends MutableListMultimap<K, V> {
 
         private final MutableMap<K, MutableList<V>> impl = MutableMap.empty();
         private int size;
@@ -48,7 +53,7 @@ public abstract class MutableListMultimap<K, V>
         private DefaultImpl() { }
 
         @Override
-        public List<V> get(K key) {
+        public List<V> get(Object key) {
             return impl.get(key)
                 .mapped(Function.<List<V>>identity())
                 .orElseGet(List::empty);

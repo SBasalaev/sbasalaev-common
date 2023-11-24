@@ -27,6 +27,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
@@ -42,7 +45,8 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public abstract class Collection<@Out T> implements Traversable<T>, Cloneable {
+public abstract class Collection<@Out T extends @NonNull Object>
+        implements Traversable<T>, Cloneable {
 
     /** Constructor for subclasses. */
     public Collection() { }
@@ -51,14 +55,14 @@ public abstract class Collection<@Out T> implements Traversable<T>, Cloneable {
      * Number of elements in this collection.
      * Unlike {@link Traversable#count()} this method is guaranteed to be fast.
      */
-    public abstract int size();
+    public abstract @NonNegative int size();
 
     /**
      * Number of elements in this collection.
      * Returns the same value as {@link #size() }.
      */
     @Override
-    public int count() {
+    public @NonNegative int count() {
         return size();
     }
 
@@ -76,7 +80,8 @@ public abstract class Collection<@Out T> implements Traversable<T>, Cloneable {
      * Returns collection of the same type with given mapping applied to all elements.
      * The collection is immutable and is unaffected by changes to this collection.
      */
-    public abstract <R> Collection<R> mapped(Function<? super T, ? extends R> mapping);
+    public abstract <R extends @NonNull Object>
+        Collection<R> mapped(Function<? super T, ? extends R> mapping);
 
     /**
      * Returns collection of the same type containing only elements matching given condition.
@@ -107,7 +112,7 @@ public abstract class Collection<@Out T> implements Traversable<T>, Cloneable {
      *
      * @throws IndexOutOfBoundsException if the collection does not fit into given array.
      */
-    public void fillArray(Object[] array, int fromIndex) {
+    public void fillArray(@Nullable Object[] array, @NonNegative int fromIndex) {
         int len = size();
         Objects.checkFromIndexSize(fromIndex, len, array.length);
         int index = fromIndex;
@@ -144,7 +149,7 @@ public abstract class Collection<@Out T> implements Traversable<T>, Cloneable {
      * Different collections have different notions of equality.
      */
     @Override
-    public abstract boolean equals(Object obj);
+    public abstract boolean equals(@Nullable Object obj);
 
     /**
      * Hash code of the collection.

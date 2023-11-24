@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Sergey Basalaev.
+ * Copyright 2018, 2023 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@
  */
 module ru.nsu.sbasalaev.common {
     requires static java.compiler;
-//    requires org.checkerframework.checker.qual;
+    requires static transitive org.checkerframework.checker.qual;
 
     exports ru.nsu.sbasalaev;
     exports ru.nsu.sbasalaev.annotation;
@@ -39,6 +39,5 @@ module ru.nsu.sbasalaev.common {
     exports ru.nsu.sbasalaev.staque;
 
     provides javax.annotation.processing.Processor
-        with ru.nsu.sbasalaev.annotation.processing.IsProcessor,
-             ru.nsu.sbasalaev.annotation.processing.InOutProcessor;
+        with ru.nsu.sbasalaev.annotation.processing.InOutProcessor;
 }

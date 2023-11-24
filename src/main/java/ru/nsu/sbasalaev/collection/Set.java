@@ -29,6 +29,8 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.API;
 import ru.nsu.sbasalaev.Opt;
 import ru.nsu.sbasalaev.annotation.Out;
@@ -38,7 +40,7 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public abstract class Set<@Out T> extends Collection<T> {
+public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> {
 
     /* CONSTRUCTORS */
 
@@ -49,7 +51,7 @@ public abstract class Set<@Out T> extends Collection<T> {
 
     /** Empty set. */
     @SuppressWarnings("unchecked")
-    public static <T> Set<T> empty() {
+    public static <T extends Object> Set<T> empty() {
         return (Set<T>) EMPTY;
     }
 
@@ -59,7 +61,7 @@ public abstract class Set<@Out T> extends Collection<T> {
      * only the first of them is put in the resulting set.
      */
     @SafeVarargs
-    public static <T> Set<T> of(T... elements) {
+    public static <T extends Object> Set<T> of(T... elements) {
         return fromTrustedArray(elements.clone());
     }
 
@@ -68,7 +70,7 @@ public abstract class Set<@Out T> extends Collection<T> {
      * The array of elements is not cloned.
      */
     @SafeVarargs
-    static <T> Set<T> fromTrustedArray(T... elements) {
+    static <T extends Object> Set<T> fromTrustedArray(T... elements) {
         return switch (elements.length) {
             case 0 -> empty();
             case 1 -> new SingletonSet<>(Objects.requireNonNull(elements[0]));
@@ -81,7 +83,7 @@ public abstract class Set<@Out T> extends Collection<T> {
      * This method returns immutable set unaffected by changes to the original sets.
      */
     @SafeVarargs
-    public static <T> Set<T> union(Set<? extends T>... sets) {
+    public static <T extends Object> Set<T> union(Set<? extends T>... sets) {
         return union(List.of(sets));
     }
 
@@ -90,7 +92,7 @@ public abstract class Set<@Out T> extends Collection<T> {
      * This method returns immutable set unaffected by the changes to the original sets.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Set<T> union(Traversable<? extends Set<? extends T>> sets) {
+    public static <T extends Object> Set<T> union(Traversable<? extends Set<? extends T>> sets) {
         Opt<? extends Set<? extends T>> firstNonEmpty = Opt.empty();
         boolean multipleNonEmpty = false;
         for (var set : sets) {
@@ -109,7 +111,7 @@ public abstract class Set<@Out T> extends Collection<T> {
         return firstNonEmpty.match(set -> (Set<T>) set.clone(), Set::empty);
     }
 
-    private static <T> Set<T> buildUnion(Traversable<? extends Set<? extends T>> sets) {
+    private static <T extends Object> Set<T> buildUnion(Traversable<? extends Set<? extends T>> sets) {
         int len = API.sum(sets.map(Set::size));
         @SuppressWarnings("unchecked")
         T[] array = (T[]) new Object[len];
@@ -122,7 +124,7 @@ public abstract class Set<@Out T> extends Collection<T> {
     }
 
     /** Set view of given java set. */
-    public static <T> Set<T> fromJava(java.util.Set<T> javaSet) {
+    public static <T extends Object> Set<T> fromJava(java.util.Set<T> javaSet) {
         return new Set<>() {
             @Override
             public boolean contains(Object element) {
@@ -197,7 +199,7 @@ public abstract class Set<@Out T> extends Collection<T> {
      * This method returns immutable set unaffected by changes to this set.
      */
     @Override
-    public <R> Set<R> mapped(Function<? super T, ? extends R> mapping) {
+    public <R extends Object> Set<R> mapped(Function<? super T, ? extends R> mapping) {
         return this.<R>map(mapping).toSet();
     }
 
@@ -253,7 +255,7 @@ public abstract class Set<@Out T> extends Collection<T> {
      * <pre>this.isSuperset(other) &amp;&amp; this.isSubset(other)</pre>
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Set<?> set)) return false;
         return size() == set.size() && isSubset(set) && isSuperset(set);
@@ -271,10 +273,10 @@ public abstract class Set<@Out T> extends Collection<T> {
         }
         return hash;
     }
-    
+
     /* IMMUTABLE IMPLEMENTATIONS */
 
-    private static abstract class ImmutableSet<@Out T> extends Set<T> {
+    private static abstract class ImmutableSet<@Out T extends Object> extends Set<T> {
 
         @Override
         public Set<T> toSet() {
@@ -289,12 +291,14 @@ public abstract class Set<@Out T> extends Collection<T> {
     }
 
     /** Set with no elements. */
-    private static final class EmptySet extends ImmutableSet<Object> implements EmptyCollection<Object> {
+    private static final class EmptySet
+            extends ImmutableSet<@NonNull Void>
+            implements EmptyCollection {
 
         private EmptySet() { }
 
         @Override
-        public boolean contains(Object element) {
+        public boolean contains(@Nullable Object element) {
             return false;
         }
 
@@ -321,7 +325,7 @@ public abstract class Set<@Out T> extends Collection<T> {
         }
 
         @Override
-        public List<Object> toList() {
+        public List<@NonNull Void> toList() {
             return List.empty();
         }
 
@@ -331,18 +335,18 @@ public abstract class Set<@Out T> extends Collection<T> {
         }
 
         @Override
-        public Object[] toArray(IntFunction<Object[]> arraySupplier) {
+        public @NonNull Void[] toArray(IntFunction<@NonNull Void[]> arraySupplier) {
             return arraySupplier.apply(0);
         }
 
         @Override
-        public void fillArray(Object[] array, int fromIndex) {
+        public void fillArray(@Nullable Object[] array, int fromIndex) {
             Objects.checkFromIndexSize(fromIndex, 0, array.length);
         }
     }
 
     /** Set containing only one element. */
-    private static final class SingletonSet<T> extends ImmutableSet<T> {
+    private static final class SingletonSet<T extends @NonNull Object> extends ImmutableSet<T> {
 
         private final T e1;
 
@@ -367,7 +371,7 @@ public abstract class Set<@Out T> extends Collection<T> {
     }
 
     /** Immutable set backed by a hash wheel. */
-    private static final class RegularSet<T> extends ImmutableSet<T> {
+    private static final class RegularSet<T extends @NonNull Object> extends ImmutableSet<T> {
 
         private final HashWheel<Object,T> wheel;
 
@@ -401,7 +405,7 @@ public abstract class Set<@Out T> extends Collection<T> {
         }
 
         @Override
-        public void fillArray(Object[] array, int fromIndex) {
+        public void fillArray(@Nullable Object[] array, int fromIndex) {
             wheel.fillArray(array, fromIndex);
         }
     }

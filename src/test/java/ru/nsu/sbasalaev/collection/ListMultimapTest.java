@@ -40,7 +40,7 @@ public class ListMultimapTest {
     public ListMultimapTest() {
     }
 
-    private static ListMultimap<String, String> map;
+    private static ListMultimap<String, String> map = ListMultimap.empty();
 
     @BeforeAll
     public static void setUpClass() {

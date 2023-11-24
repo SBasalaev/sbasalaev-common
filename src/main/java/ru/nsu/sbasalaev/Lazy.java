@@ -25,7 +25,8 @@ package ru.nsu.sbasalaev;
 
 import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
-import ru.nsu.sbasalaev.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
@@ -35,10 +36,10 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public final class Lazy<@Out T> implements Supplier<T> {
+public final class Lazy<@Out T extends @NonNull Object> implements Supplier<T> {
 
-    private T value;
-    private @Nullable Supplier<T> supplier;
+    private @MonotonicNonNull T value;
+    private final Supplier<T> supplier;
 
     /** Creates new instance that lazily evaluates given supplier. */
     public Lazy(Supplier<T> supplier) {
@@ -51,16 +52,17 @@ public final class Lazy<@Out T> implements Supplier<T> {
      */
     @Override
     public T get() {
-        if (supplier != null) {
-            value = supplier.get();
-            supplier = null;
+        T v = value;
+        if (v == null) {
+            v = supplier.get();
+            value = v;
         }
-        return value;
+        return v;
     }
 
     /** True iff value is already evaluated. */
     public boolean isEvaluated() {
-        return supplier == null;
+        return value != null;
     }
 
     @Override

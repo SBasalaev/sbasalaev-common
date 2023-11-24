@@ -28,7 +28,8 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import ru.nsu.sbasalaev.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Support implementation class for immutable maps and sets.
@@ -41,7 +42,8 @@ import ru.nsu.sbasalaev.annotation.Nullable;
  *
  * @author Sergey Basalaev
  */
-final class HashWheel<K, E> implements Iterable<E> {
+final class HashWheel<K extends @NonNull Object, E extends @NonNull Object>
+        implements Iterable<E> {
 
     /** Elements in the order given by set or map constructor. */
     private final E[] elements;
@@ -59,7 +61,7 @@ final class HashWheel<K, E> implements Iterable<E> {
     }
 
     /** Returns entry corresponding to given key, or {@code null} if there is no such entry. */
-    public @Nullable E get(K key) {
+    public @Nullable E get(Object key) {
         int len = table.length;
         int index = Math.floorMod(key.hashCode(), len);
         while (true) {
@@ -96,7 +98,7 @@ final class HashWheel<K, E> implements Iterable<E> {
         return array;
     }
 
-    public void fillArray(Object[] array, int fromIndex) {
+    public void fillArray(@Nullable Object[] array, int fromIndex) {
         Objects.checkFromIndexSize(fromIndex, 0, array.length);
         System.arraycopy(elements, 0, array, fromIndex, elements.length);
     }
@@ -115,31 +117,35 @@ final class HashWheel<K, E> implements Iterable<E> {
      * @param extractKey function to extract key part of the entry.
      *                   May be an identity function for sets.
      */
-    @SuppressWarnings("unchecked")
-    public static <K,E> HashWheel<K, E> make(E[] entries, Function<E, K> extractKey) {
+    @SuppressWarnings({"unchecked", "nullness"})
+    // Entries array should have no nulls at the beginning, then we abuse it
+    // and store nulls in place of duplicates. The function is only ever called
+    // with trusted array.
+    static <K extends @NonNull Object, E extends @NonNull Object>
+            HashWheel<K, E> make(E[] entries, Function<E, K> extractKey) {
         int entriesLen = entries.length;
         int size = 0;
         // populating searched with elements
         // if elements contains duplicates they are replaced by nulls
-        @Nullable E[] searched = (@Nullable E[])
+        @Nullable E[] table = (@Nullable E[])
                 Array.newInstance(entries.getClass().getComponentType(), entriesLen * 2);
         for (int i = 0; i < entriesLen; i++) {
             E e = entries[i];
             K key = extractKey.apply(e);
-            int index = Math.floorMod(key.hashCode(), searched.length);
+            int index = Math.floorMod(key.hashCode(), table.length);
             boolean foundCollision = false;
-            while (searched[index] != null) {
-                if (key.equals(extractKey.apply(searched[index]))) {
+            while (table[index] != null) {
+                if (key.equals(extractKey.apply(table[index]))) {
                     foundCollision = true;
                     break;
                 }
                 index++;
-                if (index == searched.length) index = 0;
+                if (index == table.length) index = 0;
             }
             if (foundCollision) {
                 entries[i] = null;
             } else {
-                searched[index] = e;
+                table[index] = e;
                 size++;
             }
         }
@@ -158,6 +164,6 @@ final class HashWheel<K, E> implements Iterable<E> {
                 }
             }
         }
-        return new HashWheel<>(origin, searched, extractKey);
+        return new HashWheel<>(origin, table, extractKey);
     }
 }

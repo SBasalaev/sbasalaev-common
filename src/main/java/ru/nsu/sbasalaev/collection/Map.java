@@ -26,6 +26,8 @@ package ru.nsu.sbasalaev.collection;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import static ru.nsu.sbasalaev.API.maybe;
 import static ru.nsu.sbasalaev.API.some;
 import ru.nsu.sbasalaev.Opt;
@@ -36,27 +38,32 @@ import ru.nsu.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public abstract class Map<K, @Out V>
+public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Object>
     extends Multimap<K, V, Opt<V>>
     implements Cloneable {
 
     /* CONSTRUCTORS */
 
+    /** Constructor for subclasses. */
+    public Map() { }
+
     private static final Map<?,?> EMPTY = new EmptyMap();
 
     /** Map with no entries. */
     @SuppressWarnings("unchecked")
-    public static <K, V> Map<K, V> empty() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> Map<K, V> empty() {
         return (Map<K, V>) EMPTY;
     }
 
     /** Map containing given entry. */
-    public static <K, V> Map<K, V> of(K key, V value) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K, V> of(K key, V value) {
         return new SingletonMap<>(Objects.requireNonNull(key), Objects.requireNonNull(value));
     }
 
     /** Map containing given entries. */
-    public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K, V> of(K k1, V v1, K k2, V v2) {
         return fromTrustedArray(
             Entry.of(k1, v1),
             Entry.of(k2, v2)
@@ -64,7 +71,8 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map containing given entries. */
-    public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
         return fromTrustedArray(
             Entry.of(k1, v1),
             Entry.of(k2, v2),
@@ -73,7 +81,8 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map containing given entries. */
-    public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         return fromTrustedArray(
             Entry.of(k1, v1),
             Entry.of(k2, v2),
@@ -83,7 +92,8 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map containing given entries. */
-    public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
         return fromTrustedArray(
             Entry.of(k1, v1),
             Entry.of(k2, v2),
@@ -94,7 +104,8 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map containing given entries. */
-    public static <K, V> Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
         return fromTrustedArray(
             Entry.of(k1, v1),
             Entry.of(k2, v2),
@@ -106,7 +117,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** Builder of immutable maps. */
-    public static final class Builder<K, V> {
+    public static final class Builder<K extends @NonNull Object, V extends @NonNull Object> {
 
         private final MutableList<Entry<K,V>> entries = MutableList.empty();
 
@@ -142,7 +153,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** Builds map from given entries. */
-    public static <K, V> Map.Builder<K, V> build() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> Map.Builder<K, V> build() {
         return new Builder<>();
     }
 
@@ -151,7 +162,8 @@ public abstract class Map<K, @Out V>
      * The array of elements is not cloned.
      */
     @SafeVarargs
-    static <K, V> Map<K, V> fromTrustedArray(Entry<K,V>... entries) {
+    static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K, V> fromTrustedArray(Entry<K,V>... entries) {
         return switch (entries.length) {
             case 0 -> empty();
             case 1 -> {
@@ -163,10 +175,11 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map view of given java map. */
-    public static <K, V> Map<K,V> fromJava(java.util.Map<K,V> javaMap) {
+    public static <K extends @NonNull Object, V extends @NonNull Object>
+            Map<K,V> fromJava(java.util.Map<K,V> javaMap) {
         return new Map<K, V>() {
             @Override
-            public Opt<V> get(K key) {
+            public Opt<V> get(Object key) {
                 return Opt.ofNullable(javaMap.get(key));
             }
 
@@ -207,7 +220,7 @@ public abstract class Map<K, @Out V>
 
     /** Value associated with given key or empty optional if there is none. */
     @Override
-    public abstract Opt<V> get(K key);
+    public abstract Opt<V> get(Object key);
 
     /**
      * Number of keys in this map.
@@ -230,7 +243,7 @@ public abstract class Map<K, @Out V>
             @Override
             public boolean contains(Object element) {
                 if (element instanceof Entry<?,?> entry && entry.value() instanceof Opt<?> value && value.nonEmpty()) {
-                    for (var valueOfThis : Map.this.get((K) entry.key())) {
+                    for (var valueOfThis : Map.this.get(entry.key())) {
                         return value.exists(valueOfThis::equals);
                     }
                 }
@@ -272,7 +285,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** View of this map with given mapping applied to values. */
-    public <W> Map<K, W> mapValues(Function<? super V, ? extends W> mapping) {
+    public <W extends @NonNull Object> Map<K, W> mapValues(Function<? super V, ? extends W> mapping) {
         Objects.requireNonNull(mapping);
         return new Map<K, W>() {
             @Override
@@ -307,7 +320,7 @@ public abstract class Map<K, @Out V>
             }
 
             @Override
-            public Opt<W> get(K key) {
+            public Opt<W> get(Object key) {
                 return Map.this.get(key).mapped(mapping);
             }
 
@@ -319,6 +332,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** View of this map as java map. */
+    @SuppressWarnings("keyfor") // I couldn't manage to make it work
     public java.util.Map<K, V> toJava() {
         return new java.util.AbstractMap<K, V>() {
             final class JavaEntry<K, V> implements java.util.Map.Entry<K, V> {
@@ -367,7 +381,7 @@ public abstract class Map<K, @Out V>
 
             @Override
             @SuppressWarnings("unchecked")
-            public V get(Object key) {
+            public @Nullable V get(Object key) {
                 return Map.this.get((K) key).orElseNull();
             }
 
@@ -403,22 +417,22 @@ public abstract class Map<K, @Out V>
      * i.e. their {@link #entries() } methods return equal sets.
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Map<?,?> map)) return false;
         return this.entries().equals(map.entries());
     }
 
     /* IMMUTABLE IMPLEMENTATIONS */
-    private static abstract class ImmutableMap<K, @Out V> extends Map<K, V> { }
+    private static abstract class ImmutableMap<K extends @NonNull Object, @Out V extends @NonNull Object> extends Map<K, V> { }
 
     /** Singleton map with no elements. */
-    private static final class EmptyMap extends ImmutableMap<Object, Object> {
+    private static final class EmptyMap extends ImmutableMap<Object, @NonNull Void> {
 
         private EmptyMap() { }
 
         @Override
-        public Opt<Object> get(Object key) {
+        public Opt<@NonNull Void> get(Object key) {
             return Opt.empty();
         }
 
@@ -428,12 +442,13 @@ public abstract class Map<K, @Out V>
         }
 
         @Override
-        public Set<Entry<Object, Object>> entries() {
+        public Set<Entry<Object, @NonNull Void>> entries() {
             return Set.empty();
         }
 
         @Override
-        public <W> Map<Object, W> mapValues(Function<? super Object, ? extends W> mapping) {
+        public <W extends @NonNull Object>
+                Map<Object, W> mapValues(Function<? super @NonNull Void, ? extends W> mapping) {
             Objects.requireNonNull(mapping);
             return Map.empty();
         }
@@ -445,7 +460,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map containing only one entry. */
-    private static final class SingletonMap<K, V> extends ImmutableMap<K,V> {
+    private static final class SingletonMap<K extends @NonNull Object, V extends @NonNull Object> extends ImmutableMap<K,V> {
 
         private final K key;
         private final V value;
@@ -456,12 +471,12 @@ public abstract class Map<K, @Out V>
         }
 
         @Override
-        public Opt<V> get(K key) {
+        public Opt<V> get(Object key) {
             return this.key.equals(key) ? Opt.of(value) : Opt.empty();
         }
 
         @Override
-        public boolean containsKey(K key) {
+        public boolean containsKey(Object key) {
             return this.key.equals(key);
         }
 
@@ -477,7 +492,7 @@ public abstract class Map<K, @Out V>
     }
 
     /** Map backed by a hash wheel. */
-    private static final class WheelMap<K, V> extends ImmutableMap<K, V> {
+    private static final class WheelMap<K extends @NonNull Object, V extends @NonNull Object> extends ImmutableMap<K, V> {
 
         private final HashWheel<K, Entry<K, V>> wheel;
 
@@ -486,12 +501,12 @@ public abstract class Map<K, @Out V>
         }
 
         @Override
-        public Opt<V> get(K key) {
+        public Opt<V> get(Object key) {
             return maybe(wheel.get(key)).mapped(Entry::value);
         }
 
         @Override
-        public boolean containsKey(K key) {
+        public boolean containsKey(Object key) {
             return wheel.get(key) != null;
         }
 

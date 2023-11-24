@@ -23,18 +23,21 @@
  */
 package ru.nsu.sbasalaev.collection;
 
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * List element with its corresponding index.
  *
  * @author Sergey Basalaev
  */
-public record IndexedElement<T>(int index, T element) {
+public record IndexedElement<T extends @NonNull Object>(@NonNegative int index, T element) {
 
     /**
      * Creates an instance of indexed element.
      * This is a legacy compatibility method from before IndexedElement became a record.
      */
-    public static <T> IndexedElement<T> of(int index, T element) {
+    public static <T extends @NonNull Object> IndexedElement<T> of(@NonNegative int index, T element) {
         return new IndexedElement<>(index, element);
     }
 

@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
-import ru.nsu.sbasalaev.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.collection.Collection;
 import ru.nsu.sbasalaev.collection.Iterators;
 import ru.nsu.sbasalaev.collection.Traversable;
@@ -54,7 +54,7 @@ import ru.nsu.sbasalaev.collection.Traversable;
  *
  * @author Sergey Basalaev
  */
-public final class Opt<T> extends Collection<T> {
+public final class Opt<T extends Object> extends Collection<T> {
 
     private final @Nullable T value;
 
@@ -68,22 +68,22 @@ public final class Opt<T> extends Collection<T> {
 
     /** Empty optional. */
     @SuppressWarnings("unchecked")
-    public static <T> Opt<T> empty() {
+    public static <T extends Object> Opt<T> empty() {
         return (Opt<T>) NONE;
     }
 
     /** Non-empty optional. */
-    public static <T> Opt<T> of(T value) {
+    public static <T extends Object> Opt<T> of(T value) {
         return new Opt<>(Objects.requireNonNull(value));
     }
 
     /** Optional of non-null value, empty optional for null. */
-    public static <T> Opt<T> ofNullable(@Nullable T value) {
+    public static <T extends Object> Opt<T> ofNullable(@Nullable T value) {
         return value != null ? new Opt<>(value) : empty();
     }
 
     /** Converts Java optional to Opt. */
-    public static <T> Opt<T> fromJava(java.util.Optional<T> optional) {
+    public static <T extends Object> Opt<T> fromJava(java.util.Optional<T> optional) {
         return optional.map(Opt::of).orElseGet(Opt::empty);
     }
 
@@ -113,7 +113,7 @@ public final class Opt<T> extends Collection<T> {
     }
 
     /** Returns value in this optional or throws {@code NoSuchElementException} with given {@code message}. */
-    public T orElseThrow(@Nullable String message) throws NoSuchElementException {
+    public T orElseThrow(String message) throws NoSuchElementException {
         if (value != null) {
             return value;
         }
@@ -177,7 +177,7 @@ public final class Opt<T> extends Collection<T> {
      * This is eager operation that applies the mapping immediately.
      */
     @Override
-    public <R> Opt<R> mapped(Function<? super T, ? extends R> mapping) {
+    public <R extends Object> Opt<R> mapped(Function<? super T, ? extends R> mapping) {
         Objects.requireNonNull(mapping);
         return value != null ? Opt.of(mapping.apply(value)) : empty();
     }
@@ -195,7 +195,7 @@ public final class Opt<T> extends Collection<T> {
     /** Returns this optional if its value is of given class, empty optional otherwise. */
     @Override
     @SuppressWarnings("unchecked")
-    public <U> Opt<U> narrow(Class<U> clazz) {
+    public <U extends Object> Opt<U> narrow(Class<U> clazz) {
         return clazz.isInstance(value) ? (Opt<U>) this : empty();
     }
 
@@ -208,7 +208,7 @@ public final class Opt<T> extends Collection<T> {
     }
 
     @Override
-    public <R> R fold(R first, BiFunction<? super R, ? super T, ? extends R> combine) {
+    public <R extends Object> R fold(R first, BiFunction<? super R, ? super T, ? extends R> combine) {
         return value != null ? combine.apply(first, value) : first;
     }
 
@@ -231,7 +231,7 @@ public final class Opt<T> extends Collection<T> {
      * and either both are empty or contain equal values.
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Opt<?> opt)) return false;
         return Objects.equals(this.value, opt.value);

@@ -24,7 +24,7 @@
 package ru.nsu.sbasalaev;
 
 import java.util.function.Function;
-import ru.nsu.sbasalaev.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.collection.List;
 import ru.nsu.sbasalaev.collection.Set;
 import ru.nsu.sbasalaev.collection.Traversable;
@@ -60,39 +60,39 @@ public final class API {
     /* COLLECTIONS */
 
     /** Empty optional. */
-    public static <T> Opt<T> none() {
+    public static <T extends Object> Opt<T> none() {
         return Opt.empty();
     }
 
     /** Non-empty optional. */
-    public static <T> Opt<T> some(T value) {
+    public static <T extends Object> Opt<T> some(T value) {
         return Opt.of(value);
     }
 
     /** Wraps value into optional. */
-    public static <T> Opt<T> maybe(@Nullable T value) {
+    public static <T extends Object> Opt<T> maybe(@Nullable T value) {
         return Opt.ofNullable(value);
     }
 
     /** Empty list. */
-    public static <T> List<T> list() {
+    public static <T extends Object> List<T> list() {
         return List.empty();
     }
 
     /** List of given elements. */
     @SafeVarargs
-    public static <T> List<T> list(T... elements) {
+    public static <T extends Object> List<T> list(T... elements) {
         return List.of(elements);
     }
 
     /** Empty set. */
-    public static <T> Set<T> set() {
+    public static <T extends Object> Set<T> set() {
         return Set.empty();
     }
 
     /** Set of given elements. */
     @SafeVarargs
-    public static <T> Set<T> set(T... elements) {
+    public static <T extends Object> Set<T> set(T... elements) {
         return Set.of(elements);
     }
 
@@ -102,7 +102,7 @@ public final class API {
      */
     @SafeVarargs
     @SuppressWarnings("unchecked")
-    public static <T> Traversable<T> chain(Traversable<? extends T>... elements) {
+    public static <T extends Object> Traversable<T> chain(Traversable<? extends T>... elements) {
         return (Traversable<T>) list(elements).<Traversable<?>>fold(list(), Traversable::chain);
     }
 
@@ -111,7 +111,7 @@ public final class API {
      * The returned list is immutable and is not affected by changes to the original lists.
      */
     @SafeVarargs
-    public static <T> List<T> concat(List<? extends T>... lists) {
+    public static <T extends Object> List<T> concat(List<? extends T>... lists) {
         return List.concatenated(lists);
     }
 
@@ -120,7 +120,7 @@ public final class API {
      * The returned list is immutable and is not affected by changes to the original list.
      * @since 3.1
      */
-    public static <T> List<T> append(List<? extends T> list, T item) {
+    public static <T extends Object> List<T> append(List<? extends T> list, T item) {
         return concat(list, list(item));
     }
 

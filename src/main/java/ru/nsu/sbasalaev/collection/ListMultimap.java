@@ -23,7 +23,8 @@
  */
 package ru.nsu.sbasalaev.collection;
 
-import ru.nsu.sbasalaev.API;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import ru.nsu.sbasalaev.annotation.Out;
 
 /**
@@ -32,25 +33,28 @@ import ru.nsu.sbasalaev.annotation.Out;
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class ListMultimap<K, @Out V>
+public abstract class ListMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
     extends Multimap<K, V, List<V>>
     implements Cloneable {
 
     /* CONSTRUCTORS */
 
+    /** Constructor for subclasses. */
+    public ListMultimap() { }
+
     private static final ListMultimap<?, ?> EMPTY = new EmptyMultimap();
 
     /** Empty list multimap. */
-    public static <K,V> ListMultimap<K, V> empty() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> ListMultimap<K, V> empty() {
         return (ListMultimap<K, V>) EMPTY;
     }
 
     /** Builder of immutable list multimaps. */
-    public static <K,V> Builder<K,V> build() {
+    public static <K extends @NonNull Object, V extends @NonNull Object> Builder<K,V> build() {
         return new Builder<>();
     }
 
-    public static final class Builder<K, V> {
+    public static final class Builder<K extends @NonNull Object, V extends @NonNull Object> {
 
         private final MutableListMultimap<K, V> collector = MutableListMultimap.empty();
 
@@ -78,7 +82,8 @@ public abstract class ListMultimap<K, @Out V>
         }
     }
 
-    private static <K,V> ListMultimap<K,V> fromTrustedArray(Entry<K, List<V>>[] entries) {
+    private static <K extends @NonNull Object, V extends @NonNull Object>
+            ListMultimap<K,V> fromTrustedArray(Entry<K, List<V>>[] entries) {
         if (entries.length == 0) return empty();
         return new WheelMultimap<>(HashWheel.make(entries, Entry::key));
     }
@@ -90,7 +95,7 @@ public abstract class ListMultimap<K, @Out V>
      * Values are returned in the same order they are added to this multimap.
      */
     @Override
-    public abstract List<V> get(K key);
+    public abstract List<V> get(Object key);
 
     /* OVERRIDEN MEMBERS */
 
@@ -109,7 +114,7 @@ public abstract class ListMultimap<K, @Out V>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof ListMultimap<?,?> map)) return false;
         return collectionEntries().equals(map.collectionEntries());
@@ -117,12 +122,13 @@ public abstract class ListMultimap<K, @Out V>
 
     /* IMMUTABLE IMPLEMENTATIONS */
 
-    private static abstract class ImmutableMultimap<K, @Out V> extends ListMultimap<K, V> { }
+    private static abstract class ImmutableMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
+            extends ListMultimap<K, V> { }
 
-    private static final class EmptyMultimap extends ImmutableMultimap<Object, Object> {
+    private static final class EmptyMultimap extends ImmutableMultimap<Object, @NonNull Void> {
 
         @Override
-        public List<Object> get(Object key) {
+        public List<@NonNull Void> get(Object key) {
             return List.empty();
         }
 
@@ -142,18 +148,19 @@ public abstract class ListMultimap<K, @Out V>
         }
 
         @Override
-        public Set<Entry<Object, List<Object>>> collectionEntries() {
+        public Set<Entry<Object, List<@NonNull Void>>> collectionEntries() {
             return Set.empty();
         }
 
         @Override
-        public Traversable<Entry<Object, Object>> entries() {
+        public Traversable<Entry<Object, @NonNull Void>> entries() {
             return Set.empty();
         }
     }
 
     /** Multimap backed by a hash wheel. */
-    private static final class WheelMultimap<K, V> extends ImmutableMultimap<K, V> {
+    private static final class WheelMultimap<K extends @NonNull Object, V extends @NonNull Object>
+            extends ImmutableMultimap<K, V> {
 
         private final HashWheel<K, Entry<K, List<V>>> impl;
         private final int size;
@@ -168,7 +175,7 @@ public abstract class ListMultimap<K, @Out V>
         }
 
         @Override
-        public List<V> get(K key) {
+        public List<V> get(Object key) {
             var result = impl.get(key);
             return result != null ? result.value() : List.empty();
         }

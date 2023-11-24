@@ -38,7 +38,7 @@ public class MutableListMultimapTest {
 
     public MutableListMultimapTest() { }
 
-    private MutableListMultimap<String,String> map;
+    private MutableListMultimap<String,String> map = MutableListMultimap.empty();
 
     @BeforeEach
     public void initMultimap() {

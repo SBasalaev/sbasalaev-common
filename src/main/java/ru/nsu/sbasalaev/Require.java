@@ -24,6 +24,7 @@
 package ru.nsu.sbasalaev;
 
 import java.util.function.Supplier;
+import org.checkerframework.checker.index.qual.NonNegative;
 import ru.nsu.sbasalaev.annotation.Nullable;
 
 /**
@@ -100,7 +101,7 @@ public final class Require {
      *
      * @throws IllegalArgumentException if {@code value} is negative.
      */
-    public static int nonNegative(int value, String name) {
+    public static @NonNegative int nonNegative(int value, String name) {
         if (value < 0) throw new IllegalArgumentException(name + " is negative");
         return value;
     }

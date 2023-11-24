@@ -27,13 +27,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.IntFunction;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Set that can be mutated.
  *
  * @author Sergey Basalaev
  */
-public abstract class MutableSet<T> extends Set<T> implements MutableCollection<T> {
+public abstract class MutableSet<T extends @NonNull Object>
+        extends Set<T> implements MutableCollection<T> {
 
     /* CONSTRUCTORS */
 
@@ -41,18 +44,18 @@ public abstract class MutableSet<T> extends Set<T> implements MutableCollection<
     public MutableSet() { }
 
     /** Returns new mutable set that is initially empty. */
-    public static <T> MutableSet<T> empty() {
+    public static <T extends @NonNull Object> MutableSet<T> empty() {
         return new DefaultImpl<>();
     }
 
     /** Returns new mutable set that initially contains given elements. */
     @SafeVarargs
-    public static <T> MutableSet<T> of(T... elements) {
+    public static <T extends @NonNull Object> MutableSet<T> of(T... elements) {
         return of(List.of(elements));
     }
 
     /** Returns new mutable set that initially contains given elements. */
-    public static <T> MutableSet<T> of(Collection<? extends T> elements) {
+    public static <T extends @NonNull Object> MutableSet<T> of(Collection<? extends T> elements) {
         MutableSet<T> set = empty();
         set.addAll(elements);
         return set;
@@ -60,7 +63,7 @@ public abstract class MutableSet<T> extends Set<T> implements MutableCollection<
 
     /* IMPLEMENTATION */
 
-    private static final class DefaultImpl<T> extends MutableSet<T> {
+    private static final class DefaultImpl<T extends @NonNull Object> extends MutableSet<T> {
 
         private final HashSet<T> impl;
 
@@ -69,7 +72,7 @@ public abstract class MutableSet<T> extends Set<T> implements MutableCollection<
         }
 
         @Override
-        public boolean contains(Object element) {
+        public boolean contains(@Nullable Object element) {
             return impl.contains(element);
         }
 

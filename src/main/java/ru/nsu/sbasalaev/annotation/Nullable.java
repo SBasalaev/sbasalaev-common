@@ -29,11 +29,20 @@ import java.lang.annotation.*;
  * Marker interface for types that accept {@code null}.
  * I prefer that everything is not nullable except explicitely
  * marked as such.
+ * <p>
+ * I never got around to finishing my nullability checker,
+ * so it is better to use one of many existing solutions.
+ * I started to use
+ * <a href="https://checkerframework.org/">The Checker Framework</a>
+ * in my projects.
+ *
+ * @deprecated Use {@link org.checkerframework.checker.nullness.qual.Nullable } instead.
  *
  * @author Sergey Basalaev
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE_USE)
 @Documented
+@Deprecated(since = "3.2", forRemoval = true)
 public @interface Nullable {
 }

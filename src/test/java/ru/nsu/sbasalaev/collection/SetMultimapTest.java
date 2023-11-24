@@ -40,7 +40,7 @@ public class SetMultimapTest {
     public SetMultimapTest() {
     }
 
-    private static SetMultimap<String, String> map;
+    private static SetMultimap<String, String> map = SetMultimap.empty();
 
     @BeforeAll
     public static void setUpClass() {

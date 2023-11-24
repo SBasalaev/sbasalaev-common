@@ -23,6 +23,8 @@
  */
 package ru.nsu.sbasalaev.staque;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Double-edged queue.
  *
@@ -30,10 +32,10 @@ package ru.nsu.sbasalaev.staque;
  *
  * @author Sergey Basalaev
  */
-public interface Deque<T> extends Queue<T>, Stack<T> {
+public interface Deque<T extends @NonNull Object> extends Queue<T>, Stack<T> {
 
     /** Returns new deque that is initially empty. */
-    public static <T> Deque<T> empty() {
+    public static <T extends @NonNull Object> Deque<T> empty() {
         return new DefaultDeque<>();
     }
 }

@@ -23,12 +23,14 @@
  */
 package ru.nsu.sbasalaev.collection;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Common mutating methods for all mutable multimaps.
  *
  * @author Sergey Basalaev
  */
-public interface MultimapMutator<K, V, C extends Collection<V>> {
+public interface MultimapMutator<K extends @NonNull Object, V extends @NonNull Object, C extends @NonNull Collection<V>> {
 
     /**
      * Puts key-value pair in this multimap.
