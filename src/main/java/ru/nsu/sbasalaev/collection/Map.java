@@ -332,7 +332,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** View of this map as java map. */
-    @SuppressWarnings("keyfor") // I couldn't manage to make it work
+    @SuppressWarnings({"keyfor", "variance"}) // I couldn't manage to make keyfor work
     public java.util.Map<K, V> toJava() {
         return new java.util.AbstractMap<K, V>() {
             final class JavaEntry<K, V> implements java.util.Map.Entry<K, V> {

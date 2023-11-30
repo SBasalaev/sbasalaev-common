@@ -28,6 +28,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import ru.nsu.sbasalaev.annotation.Out;
 import ru.nsu.sbasalaev.collection.Collection;
 import ru.nsu.sbasalaev.collection.Iterators;
 import ru.nsu.sbasalaev.collection.Traversable;
@@ -54,7 +55,7 @@ import ru.nsu.sbasalaev.collection.Traversable;
  *
  * @author Sergey Basalaev
  */
-public final class Opt<T extends Object> extends Collection<T> {
+public final class Opt<@Out T extends Object> extends Collection<T> {
 
     private final @Nullable T value;
 
@@ -94,20 +95,18 @@ public final class Opt<T extends Object> extends Collection<T> {
         return value;
     }
 
-    /*
-     * The following method is the reason type parameter can not be marked @Out.
-     * If Java allowed union types the method could have the signature of
-     *     <S> T|S orElse(S defaultValue)
-     */
-
+    // If Java allowed union types the method could have the typesafe signature of
+    //     <S> T|S orElse(S defaultValue)
     /** Returns value in this optional or {@code defaultValue} if the optional is empty. */
-    public T orElse(T defaultValue) {
+    public T orElse(@SuppressWarnings("variance") T defaultValue) {
         Objects.requireNonNull(defaultValue);
         return value != null ? value : defaultValue;
     }
 
+    // If Java allowed union types the method could have the typesafe signature of
+    //     <S> T|S orElse(Supplier<? extends S> defaultValue)
     /** Returns value in this optional or the value from {@code valueSupplier} if the optional is empty. */
-    public T orElseGet(Supplier<? extends T> valueSupplier) {
+    public T orElseGet(@SuppressWarnings("variance") Supplier<? extends T> valueSupplier) {
         Objects.requireNonNull(valueSupplier);
         return value != null ? value : valueSupplier.get();
     }

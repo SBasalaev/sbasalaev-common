@@ -349,6 +349,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /** A view of this list as Java list. */
+    @SuppressWarnings("variance")
     public java.util.List<T> toJava() {
         return new java.util.AbstractList<>() {
             @Override

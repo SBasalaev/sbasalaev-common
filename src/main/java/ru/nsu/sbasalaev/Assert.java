@@ -23,7 +23,7 @@
  */
 package ru.nsu.sbasalaev;
 
-import ru.nsu.sbasalaev.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Assertions in code.

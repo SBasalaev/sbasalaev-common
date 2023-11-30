@@ -25,7 +25,7 @@ package ru.nsu.sbasalaev;
 
 import java.util.function.Supplier;
 import org.checkerframework.checker.index.qual.NonNegative;
-import ru.nsu.sbasalaev.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Argument validation methods.

@@ -213,6 +213,7 @@ public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> 
     }
 
     /** Returns view of this set as Java set. */
+    @SuppressWarnings("variance") // java set is invariant but we only support covariant methods
     public java.util.Set<T> toJava() {
         return new java.util.AbstractSet<T>() {
             @Override

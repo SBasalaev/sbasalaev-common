@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022 Sergey Basalaev.
+ * Copyright 2023 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,29 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package ru.nsu.sbasalaev.collection;
-
-import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import ru.nsu.sbasalaev.annotation.Out;
+package ru.nsu.sbasalaev.annotation.processing.variance;
 
 /**
- * List element with its corresponding index.
+ * Variance of type position.
  *
  * @author Sergey Basalaev
  */
-public record IndexedElement<@Out T extends @NonNull Object>(@NonNegative int index, T element) {
+enum Variance {
+    In("contravariant"),
+    Out("covariant"),
+    Invariant("invariant");
+    
+    private final String toString;
 
-    /**
-     * Creates an instance of indexed element.
-     * This is a legacy compatibility method from before IndexedElement became a record.
-     */
-    public static <T extends @NonNull Object> IndexedElement<T> of(@NonNegative int index, T element) {
-        return new IndexedElement<>(index, element);
+    private Variance(String toString) {
+        this.toString = toString;
     }
 
     @Override
     public String toString() {
-        return index + " => " + element;
+        return toString;
+    }
+
+    public Variance inverse() {
+        return switch (this) {
+            case In -> Out;
+            case Out -> In;
+            default -> this;
+        };
     }
 }

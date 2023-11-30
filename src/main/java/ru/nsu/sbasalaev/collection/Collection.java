@@ -96,6 +96,7 @@ public abstract class Collection<@Out T extends @NonNull Object>
     }
 
     /** Allocates and returns array with the elements of this collection. */
+    @SuppressWarnings("variance")
     public T[] toArray(IntFunction<T[]> arraySupplier) {
         int len = size();
         T[] array = arraySupplier.apply(len);

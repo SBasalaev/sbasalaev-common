@@ -32,10 +32,11 @@ import javax.tools.Diagnostic;
 
 /**
  * Base class for annotation processors.
+ * This class defines some useful shortcuts.
  *
  * @author Sergey Basalaev
  */
-abstract class ProcessorBase extends AbstractProcessor {
+public abstract class ProcessorBase extends AbstractProcessor {
 
     protected Filer files() {
         return processingEnv.getFiler();

@@ -39,5 +39,5 @@ module ru.nsu.sbasalaev.common {
     exports ru.nsu.sbasalaev.staque;
 
     provides javax.annotation.processing.Processor
-        with ru.nsu.sbasalaev.annotation.processing.InOutProcessor;
+        with ru.nsu.sbasalaev.annotation.processing.variance.VarianceProcessor;
 }
