@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018, 2023 Sergey Basalaev.
+ * Copyright 2015 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package me.sbasalaev.annotation;
+
+import java.lang.annotation.*;
 
 /**
- * Common goodies that I use across my projects.
- * <h2>Nullability</h2>
- * Methods in this module do not accept or return {@code null} unless
- * explicitly annotated as {@link org.checkerframework.checker.nullness.qual.Nullable }.
- * {@link me.sbasalaev.Opt } is used for optional parameters and return types.
+ * Annotates contravariant type parameters.
+ * This annotation indicates that the class only acts as a consumer of values
+ * of annotated type. During annotation processing phase the library performs
+ * some checks on the usage of annotated parameter types.
+ *
+ * @author Sergey Basalaev
  */
-module me.sbasalaev.common {
-    requires static java.compiler;
-    requires static transitive org.checkerframework.checker.qual;
-
-    exports me.sbasalaev;
-    exports me.sbasalaev.annotation;
-    exports me.sbasalaev.collection;
-    exports me.sbasalaev.staque;
-
-    provides javax.annotation.processing.Processor
-        with me.sbasalaev.annotation.processing.variance.VarianceProcessor;
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE_PARAMETER)
+public @interface In {
 }

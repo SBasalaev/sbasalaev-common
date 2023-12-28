@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018, 2023 Sergey Basalaev.
+ * Copyright 2015 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package me.sbasalaev.collection;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Common goodies that I use across my projects.
- * <h2>Nullability</h2>
- * Methods in this module do not accept or return {@code null} unless
- * explicitly annotated as {@link org.checkerframework.checker.nullness.qual.Nullable }.
- * {@link me.sbasalaev.Opt } is used for optional parameters and return types.
+ * Common superclass for traversables that only serve as chained views.
+ *
+ * @author Sergey Basalaev
  */
-module me.sbasalaev.common {
-    requires static java.compiler;
-    requires static transitive org.checkerframework.checker.qual;
+abstract class AbstractView<T extends @NonNull Object> implements Traversable<T> {
 
-    exports me.sbasalaev;
-    exports me.sbasalaev.annotation;
-    exports me.sbasalaev.collection;
-    exports me.sbasalaev.staque;
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        throw new AssertionError("Not comparable");
+    }
 
-    provides javax.annotation.processing.Processor
-        with me.sbasalaev.annotation.processing.variance.VarianceProcessor;
+    @Override
+    public int hashCode() {
+        throw new AssertionError("Not hashable");
+    }
+
+    @Override
+    public String toString() {
+        return "{...}";
+    }
 }

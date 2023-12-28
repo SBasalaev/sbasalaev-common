@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018, 2023 Sergey Basalaev.
+ * Copyright 2015 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package me.sbasalaev;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Common goodies that I use across my projects.
- * <h2>Nullability</h2>
- * Methods in this module do not accept or return {@code null} unless
- * explicitly annotated as {@link org.checkerframework.checker.nullness.qual.Nullable }.
- * {@link me.sbasalaev.Opt } is used for optional parameters and return types.
+ * Assertions in code.
+ * All methods throw AssertionError if the corresponding tests fail.
+ *
+ * @author Sergey Basalaev
  */
-module me.sbasalaev.common {
-    requires static java.compiler;
-    requires static transitive org.checkerframework.checker.qual;
+public final class Assert {
 
-    exports me.sbasalaev;
-    exports me.sbasalaev.annotation;
-    exports me.sbasalaev.collection;
-    exports me.sbasalaev.staque;
+    private Assert() { }
 
-    provides javax.annotation.processing.Processor
-        with me.sbasalaev.annotation.processing.variance.VarianceProcessor;
+    /** Asserts given expression is true. */
+    public static void that(boolean expression) {
+        if (!expression) throw new AssertionError();
+    }
+
+    /** Asserts given expression is false. */
+    public static void not(boolean expression) {
+        if (expression) throw new AssertionError();
+    }
+
+    /** Asserts given reference is not {@code null}. */
+    public static <T> T nonNull(@Nullable T reference) {
+        if (reference == null) throw new AssertionError();
+        return reference;
+    }
 }

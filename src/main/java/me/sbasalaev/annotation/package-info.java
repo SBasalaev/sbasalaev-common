@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018, 2023 Sergey Basalaev.
+ * Copyright 2015, 2018 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,21 +23,6 @@
  */
 
 /**
- * Common goodies that I use across my projects.
- * <h2>Nullability</h2>
- * Methods in this module do not accept or return {@code null} unless
- * explicitly annotated as {@link org.checkerframework.checker.nullness.qual.Nullable }.
- * {@link me.sbasalaev.Opt } is used for optional parameters and return types.
+ * Annotations for stricter code checking and code generation.
  */
-module me.sbasalaev.common {
-    requires static java.compiler;
-    requires static transitive org.checkerframework.checker.qual;
-
-    exports me.sbasalaev;
-    exports me.sbasalaev.annotation;
-    exports me.sbasalaev.collection;
-    exports me.sbasalaev.staque;
-
-    provides javax.annotation.processing.Processor
-        with me.sbasalaev.annotation.processing.variance.VarianceProcessor;
-}
+package me.sbasalaev.annotation;

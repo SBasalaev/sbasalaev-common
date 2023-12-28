@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018, 2023 Sergey Basalaev.
+ * Copyright 2015, 2022 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package me.sbasalaev.collection;
+
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import me.sbasalaev.annotation.Out;
 
 /**
- * Common goodies that I use across my projects.
- * <h2>Nullability</h2>
- * Methods in this module do not accept or return {@code null} unless
- * explicitly annotated as {@link org.checkerframework.checker.nullness.qual.Nullable }.
- * {@link me.sbasalaev.Opt } is used for optional parameters and return types.
+ * List element with its corresponding index.
+ *
+ * @author Sergey Basalaev
  */
-module me.sbasalaev.common {
-    requires static java.compiler;
-    requires static transitive org.checkerframework.checker.qual;
+public record IndexedElement<@Out T extends @NonNull Object>(@NonNegative int index, T element) {
 
-    exports me.sbasalaev;
-    exports me.sbasalaev.annotation;
-    exports me.sbasalaev.collection;
-    exports me.sbasalaev.staque;
+    /**
+     * Creates an instance of indexed element.
+     * This is a legacy compatibility method from before IndexedElement became a record.
+     */
+    public static <T extends @NonNull Object> IndexedElement<T> of(@NonNegative int index, T element) {
+        return new IndexedElement<>(index, element);
+    }
 
-    provides javax.annotation.processing.Processor
-        with me.sbasalaev.annotation.processing.variance.VarianceProcessor;
+    @Override
+    public String toString() {
+        return index + " => " + element;
+    }
 }
