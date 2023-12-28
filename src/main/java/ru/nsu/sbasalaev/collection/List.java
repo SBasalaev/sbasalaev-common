@@ -253,6 +253,78 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /**
+     * Performs given action for each element of this list.
+     * The consumer for this method accepts item index as the second argument.
+     *
+     * @since 4.0
+     */
+    public void forEachIndexed(ObjIntConsumer<? super T> action) {
+        for (int i = 0; i < size(); i++) {
+            action.accept(get(i), i);
+        }
+    }
+
+    /**
+     * Traverses all pairs of elements in this list.
+     * The resulting traversable returns elements produced by
+     * <pre>combiner.apply(get(i), get(j))</pre>
+     * for all indices {@code i, j} such that
+     * <pre>0 &lt;= i &lt; j &lt; size()</pre>
+     * In particular, the traversable is empty if the list has less than two elements.
+     *
+     * @since 4.0
+     */
+    public <R extends @NonNull Object> Traversable<R> pairs(BiFunction<? super T, ? super T, ? extends R> combiner) {
+        return new AbstractView<R>() {
+            @Override
+            public Iterator<R> iterator() {
+                return new Iterator<R>() {
+                    private @NonNegative int i = 0;
+                    private @NonNegative int j = 1;
+
+                    @Override
+                    public boolean hasNext() {
+                        return j < List.this.size();
+                    }
+
+                    @Override
+                    public R next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
+                        T item1 = List.this.get(i);
+                        T item2 = List.this.get(j);
+                        j++;
+                        if (j >= List.this.size()) {
+                            i++;
+                            j = i+1;
+                        }
+                        return combiner.apply(item1, item2);
+                    }
+                };
+            }
+        };
+    }
+
+    /**
+     * Performs given action for all pairs of elements in this list.
+     * The action is called as
+     * <pre>action.accept(get(i), get(j))</pre>
+     * for all indices {@code i, j} such that
+     * <pre>0 &lt;= i &lt; j &lt; size()</pre>
+     * In particular, no action is performed if the list has less than two elements.
+     *
+     * @since 4.0
+     */
+    public void forEachPair(BiConsumer<? super T, ? super T> action) {
+        for (int i = 0; i < size(); i++) {
+            for (int j = i + 1; j < size(); j++) {
+                action.accept(get(i), get(j));
+            }
+        }
+    }
+
+    /**
      * A view of this list that contains only elements starting from given offset.
      * If this list contains no more than {@code offset} elements the returned view is empty.
      * The returned list is a view that is affected immediately by the changes to this list.
@@ -573,6 +645,12 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
 
         @Override
         public List<IndexedElement<@NonNull Void>> indexed() {
+            return List.empty();
+        }
+
+        @Override
+        public <R extends @NonNull Object>
+                Traversable<R> pairs(BiFunction<? super @NonNull Void, ? super @NonNull Void, ? extends R> combiner) {
             return List.empty();
         }
 

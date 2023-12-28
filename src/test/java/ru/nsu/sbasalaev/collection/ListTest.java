@@ -24,12 +24,8 @@
 package ru.nsu.sbasalaev.collection;
 
 import java.util.Objects;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests of immutable lists.
@@ -181,6 +177,15 @@ public class ListTest {
         assertEquals(List.of("A", "BB"), eagerFiltered);
         assertSame(eagerFiltered, eagerFiltered.clone());
         assertSame(List.empty(), List.<String>empty().filtered(s -> s.length() <= 2));
+    }
+
+    @Test
+    public void testPairs() {
+        var list = List.of("A", "B", "C");
+        assertIterableEquals(
+            List.of(Entry.of("A", "B"), Entry.of("A", "C"), Entry.of("B", "C")),
+            list.pairs(Entry::of)
+        );
     }
 
     @Test
