@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.nsu.sbasalaev.common</groupId>
+    <groupId>me.sbasalaev.common</groupId>
     <artifactId>sbasalaev-common</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <scm>
         <connection>scm:git:git@github.com:SBasalaev/sbasalaev-common.git</connection>
         <tag>HEAD</tag>
@@ -76,6 +76,8 @@
         </profile>
     </profiles>
     <properties>
+        <netbeans.hint.license>mit</netbeans.hint.license>
+        <netbeans.compile.on.save>all</netbeans.compile.on.save>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
