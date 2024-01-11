@@ -23,14 +23,10 @@
  */
 package me.sbasalaev.collection;
 
-import me.sbasalaev.collection.SetMultimap;
-import me.sbasalaev.collection.Entry;
-import me.sbasalaev.collection.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -43,18 +39,13 @@ public class SetMultimapTest {
     public SetMultimapTest() {
     }
 
-    private static SetMultimap<String, String> map = SetMultimap.empty();
-
-    @BeforeAll
-    public static void setUpClass() {
-        map = SetMultimap
+    private static final SetMultimap<String, String> map = SetMultimap
             .<String,String>build()
             .add("key1", "AA")
             .add("key2", "BB")
             .add("key1", "AB")
             .add("key2", "BB")
             .toSetMultimap();
-    }
 
     @Test
     public void testEmpty() {

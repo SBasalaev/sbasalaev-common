@@ -23,8 +23,6 @@
  */
 package me.sbasalaev.collection;
 
-import me.sbasalaev.collection.List;
-import me.sbasalaev.collection.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 

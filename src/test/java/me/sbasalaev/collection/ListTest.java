@@ -23,9 +23,6 @@
  */
 package me.sbasalaev.collection;
 
-import me.sbasalaev.collection.List;
-import me.sbasalaev.collection.IndexedElement;
-import me.sbasalaev.collection.Entry;
 import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;

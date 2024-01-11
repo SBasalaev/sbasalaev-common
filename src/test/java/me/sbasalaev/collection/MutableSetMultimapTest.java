@@ -23,9 +23,6 @@
  */
 package me.sbasalaev.collection;
 
-import me.sbasalaev.collection.Entry;
-import me.sbasalaev.collection.Set;
-import me.sbasalaev.collection.MutableSetMultimap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,7 +38,7 @@ public class MutableSetMultimapTest {
 
     public MutableSetMultimapTest() { }
 
-    private MutableSetMultimap<String,String> map = MutableSetMultimap.empty();
+    private MutableSetMultimap<String,String> map;
 
     @BeforeEach
     public void initMultimap() {
