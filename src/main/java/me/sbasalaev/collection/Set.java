@@ -29,11 +29,12 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import me.sbasalaev.API;
 import me.sbasalaev.Opt;
 import me.sbasalaev.annotation.Out;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A collection of distinct elements.
@@ -304,7 +305,7 @@ public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> 
         }
 
         @Override
-        public int size() {
+        public @NonNegative int size() {
             return 0;
         }
 
@@ -361,7 +362,7 @@ public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> 
         }
 
         @Override
-        public int size() {
+        public @NonNegative int size() {
             return 1;
         }
 
@@ -386,7 +387,7 @@ public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> 
         }
 
         @Override
-        public int size() {
+        public @NonNegative int size() {
             return wheel.size();
         }
 

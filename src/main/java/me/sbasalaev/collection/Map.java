@@ -25,13 +25,14 @@ package me.sbasalaev.collection;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import static me.sbasalaev.API.maybe;
 import static me.sbasalaev.API.some;
 import me.sbasalaev.Opt;
 import me.sbasalaev.annotation.Out;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Mapping of keys to values.
@@ -329,6 +330,17 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
                 return Map.this.size();
             }
         };
+    }
+
+    /**
+     * Performs given action for each entry in this map.
+     * 
+     * @since 4.1
+     */
+    public void forEachEntry(BiConsumer<K, V> action) {
+        for (var entry : entries()) {
+            action.accept(entry.key(), entry.value());
+        }
     }
 
     /** View of this map as java map. */

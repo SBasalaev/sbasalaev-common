@@ -30,14 +30,14 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import me.sbasalaev.API;
 import static me.sbasalaev.API.none;
 import static me.sbasalaev.API.some;
 import me.sbasalaev.Opt;
 import me.sbasalaev.Require;
 import me.sbasalaev.annotation.Out;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Collection of elements that may be traversed in sequence.
@@ -240,6 +240,17 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
     }
 
     /**
+     * Counts number of elements that satisfy given {@code condition}.
+     * If the traversable has more than {@code Integer.MAX_VALUE}
+     * elements, returns {@code Integer.MAX_VALUE}.
+     *
+     * @since 4.1
+     */
+    public default @NonNegative int count(Predicate<? super T> condition) {
+        return filter(condition).count();
+    }
+
+    /**
      * Counts number of elements in this collection.
      * As opposed to {@link Collection#size()} this method
      * may need to perform computations to count the number of elements.
@@ -271,7 +282,12 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
      *
      * @param <K> type of the classifier key.
      * @param classifier function that assigns keys to elements of this traversable.
+     *
+     * @deprecated Use
+     *   {@link #groupedIntoSetsBy(java.util.function.Function) } or
+     *   {@link #groupedIntoListsBy(java.util.function.Function) } instead.
      */
+    @Deprecated(since = "4.1")
     public default <K extends @NonNull Object>
             Map<K, ? extends List<T>> groupedBy(Function<? super T, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
@@ -286,6 +302,44 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
     }
 
     /**
+     * Collects elements of this traversable into sets grouped by given classifier.
+     * The resulting collection is immutable and is not affected by changes to this traversable.
+     *
+     * @param <K> type of the classifier key.
+     * @param classifier function that assigns keys to elements of this traversable.
+     *
+     * @since 4.1
+     */
+    public default <K extends @NonNull Object>
+            SetMultimap<K, T> groupedIntoSets(Function<? super T, ? extends K> classifier) {
+        Objects.requireNonNull(classifier, "classifier");
+        var builder = SetMultimap.<K, T>build();
+        for (var item : this) {
+            builder.add(classifier.apply(item), item);
+        }
+        return builder.toSetMultimap();
+    }
+
+    /**
+     * Collects elements of this traversable into sets grouped by given classifier.
+     * The resulting collection is immutable and is not affected by changes to this traversable.
+     *
+     * @param <K> type of the classifier key.
+     * @param classifier function that assigns keys to elements of this traversable.
+     *
+     * @since 4.1
+     */
+    public default <K extends @NonNull Object>
+            ListMultimap<K, T> groupedIntoLists(Function<? super T, ? extends K> classifier) {
+        Objects.requireNonNull(classifier, "classifier");
+        var builder = ListMultimap.<K, T>build();
+        for (var item : this) {
+            builder.add(classifier.apply(item), item);
+        }
+        return builder.toListMultimap();
+    }
+
+    /**
      * Returns list of elements of this traversable sorted by given comparator.
      *
      * @param comparing comparator for elements of this traversable.
@@ -293,7 +347,7 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
     public default List<T> sortedBy(Comparator<? super T> comparing) {
         var list = MutableList.of(toList());
         list.sortBy(comparing);
-        return list;
+        return list.clone();
     }
 
     /** Collects elements of this traversable into an immutable list. */

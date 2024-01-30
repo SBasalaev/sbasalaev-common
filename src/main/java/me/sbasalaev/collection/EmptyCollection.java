@@ -28,8 +28,8 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import me.sbasalaev.Require;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Shared implementation of immutable empty collections.
@@ -100,10 +100,23 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
     }
 
     @Override
+    @Deprecated
     default <K extends @NonNull Object>
             Map<K, ? extends List<@NonNull Void>> groupedBy(Function<? super @NonNull Void, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         return Map.empty();
+    }
+
+    @Override
+    default <K> ListMultimap<K, Void> groupedIntoLists(Function<? super Void, ? extends K> classifier) {
+        Objects.requireNonNull(classifier, "classifier");
+        return ListMultimap.empty();
+    }
+
+    @Override
+    default <K> SetMultimap<K, Void> groupedIntoSets(Function<? super Void, ? extends K> classifier) {
+        Objects.requireNonNull(classifier, "classifier");
+        return SetMultimap.empty();
     }
 
     @Override
