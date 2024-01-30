@@ -26,37 +26,50 @@ package me.sbasalaev;
 import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 import me.sbasalaev.annotation.Out;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Lazily evaluated value.
+ * This class is thread-safe, the evaluation of the value only happens once
+ * and it is safe to call {@link #get() } simultaneously from different threads.
  *
  * @since 1.1
  *
  * @author Sergey Basalaev
  */
-public final class Lazy<@Out T extends Object> implements Supplier<T> {
+public final class Lazy<@Out T> implements Supplier<T> {
 
-    private @MonotonicNonNull T value;
-    private final Supplier<T> supplier;
+    private volatile T value;
+    private volatile @Nullable Supplier<T> supplier;
+    private final Object lock = new Object();
 
-    /** Creates new instance that lazily evaluates given supplier. */
+    /** Creates new instance that lazily evaluates value from given supplier. */
     public Lazy(Supplier<T> supplier) {
+        this.value = null;
         this.supplier = requireNonNull(supplier);
     }
 
+    /** Creates new instance with the value that is already evaluated. */
+    public Lazy(T value) {
+        this.value = value;
+        this.supplier = null;
+    }
+
     /**
-     * Evaluates and returns value of this Lazy.
+     * Evaluates and returns the value.
      * If value is already evaluated, just returns it.
      */
     @Override
     public T get() {
-        T v = value;
-        if (v == null) {
-            v = supplier.get();
-            value = v;
+        if (supplier != null) {
+            synchronized (lock) {
+                if (supplier != null) {
+                    value = supplier.get();
+                    supplier = null;
+                }
+            }
         }
-        return v;
+        return value;
     }
 
     /** True iff value is already evaluated. */
