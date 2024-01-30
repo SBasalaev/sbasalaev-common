@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Sergey Basalaev.
+ * Copyright 2018, 2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,6 @@
  */
 package me.sbasalaev.staque;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 /**
  * Last-in-first-out element feed.
  *
@@ -32,10 +30,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @author Sergey Basalaev
  */
-public interface Stack<T extends @NonNull Object> extends Feed<T> {
+public interface Stack<T extends Object> extends Feed<T> {
 
     /** Returns new stack that is initially empty. */
-    public static <T extends @NonNull Object> Stack<T> empty() {
+    public static <T extends Object> Stack<T> empty() {
         return new DefaultDeque<>();
     }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022, 2023 Sergey Basalaev.
+ * Copyright 2015, 2022-2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import static me.sbasalaev.API.none;
 import static me.sbasalaev.API.some;
 import me.sbasalaev.Opt;
@@ -41,7 +40,7 @@ import me.sbasalaev.Opt;
  *
  * @author Sergey Basalaev
  */
-public abstract class MutableMap<K extends @NonNull Object, V extends @NonNull Object>
+public abstract class MutableMap<K extends Object, V extends Object>
     extends Map<K, V>
     implements MultimapMutator<K, V, Opt<V>> {
 
@@ -51,12 +50,12 @@ public abstract class MutableMap<K extends @NonNull Object, V extends @NonNull O
     public MutableMap() { }
 
     /** Returns new mutable map that is initially empty. */
-    public static <K extends @NonNull Object, V extends @NonNull Object> MutableMap<K,V> empty() {
+    public static <K extends Object, V extends Object> MutableMap<K,V> empty() {
         return new DefaultImpl<>();
     }
 
     /** Returns new mutable map that initially contains given values. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             MutableMap<K,V> copyOf(Map<K,V> map) {
         MutableMap<K,V> result = empty();
         for (var entry : map.entries()) {
@@ -165,7 +164,7 @@ public abstract class MutableMap<K extends @NonNull Object, V extends @NonNull O
 
     /* IMPLEMENTATION */
 
-    private static final class DefaultImpl<K extends @NonNull Object, V extends @NonNull Object>
+    private static final class DefaultImpl<K extends Object, V extends Object>
             extends MutableMap<K, V> {
 
         private final HashMap<K, V> impl;

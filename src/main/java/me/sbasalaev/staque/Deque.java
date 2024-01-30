@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Sergey Basalaev.
+ * Copyright 2018, 2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,6 @@
  */
 package me.sbasalaev.staque;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 /**
  * Double-edged queue.
  *
@@ -32,10 +30,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @author Sergey Basalaev
  */
-public interface Deque<T extends @NonNull Object> extends Queue<T>, Stack<T> {
+public interface Deque<T extends Object> extends Queue<T>, Stack<T> {
 
     /** Returns new deque that is initially empty. */
-    public static <T extends @NonNull Object> Deque<T> empty() {
+    public static <T extends Object> Deque<T> empty() {
         return new DefaultDeque<>();
     }
 }

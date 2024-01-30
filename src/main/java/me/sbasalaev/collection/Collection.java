@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import me.sbasalaev.annotation.Out;
+import org.checkerframework.checker.index.qual.NonNegative;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Collection of elements.
@@ -45,7 +44,7 @@ import me.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public abstract class Collection<@Out T extends @NonNull Object>
+public abstract class Collection<@Out T extends Object>
         implements Traversable<T>, Cloneable {
 
     /** Constructor for subclasses. */
@@ -80,8 +79,7 @@ public abstract class Collection<@Out T extends @NonNull Object>
      * Returns collection of the same type with given mapping applied to all elements.
      * The collection is immutable and is unaffected by changes to this collection.
      */
-    public abstract <R extends @NonNull Object>
-        Collection<R> mapped(Function<? super T, ? extends R> mapping);
+    public abstract <R extends Object> Collection<R> mapped(Function<? super T, ? extends R> mapping);
 
     /**
      * Returns collection of the same type containing only elements matching given condition.

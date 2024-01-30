@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,9 @@
  */
 package me.sbasalaev.collection;
 
+import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import me.sbasalaev.annotation.Out;
 
 /**
  * Mapping of keys to lists of values.
@@ -33,7 +33,7 @@ import me.sbasalaev.annotation.Out;
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class ListMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
+public abstract class ListMultimap<K extends Object, @Out V extends Object>
     extends Multimap<K, V, List<V>>
     implements Cloneable {
 
@@ -45,33 +45,41 @@ public abstract class ListMultimap<K extends @NonNull Object, @Out V extends @No
     private static final ListMultimap<?, ?> EMPTY = new EmptyMultimap();
 
     /** Empty list multimap. */
-    public static <K extends @NonNull Object, V extends @NonNull Object> ListMultimap<K, V> empty() {
+    public static <K extends Object, V extends Object> ListMultimap<K, V> empty() {
         return (ListMultimap<K, V>) EMPTY;
     }
 
     /** Builder of immutable list multimaps. */
-    public static <K extends @NonNull Object, V extends @NonNull Object> Builder<K,V> build() {
+    public static <K extends Object, V extends Object> Builder<K,V> build() {
         return new Builder<>();
     }
 
-    public static final class Builder<K extends @NonNull Object, V extends @NonNull Object> {
+    /** Builder of immutable list multimaps. */
+    public static final class Builder<K extends Object, V extends Object> {
 
         private final MutableListMultimap<K, V> collector = MutableListMultimap.empty();
 
         private Builder() { }
 
+        /** Adds given entry to this builder. */
         public Builder<K,V> add(K key, V value) {
             collector.add(key, value);
             return this;
         }
 
+        /** Adds given entry to this builder. */
         public Builder<K,V> add(Entry<K,V> entry) {
             collector.add(entry.key(), entry.value());
             return this;
         }
 
+        /**
+         * Creates new immutable multimap with entries added to this builder.
+         * May be called multiple times.
+         */
         public ListMultimap<K,V> toListMultimap() {
             if (collector.keySize() == 0) return empty();
+            @SuppressWarnings("rawtypes")
             Entry<K, List<V>>[] entries = new Entry[collector.keySize()];
             int index = 0;
             for (var entry : collector.collectionEntries()) {
@@ -82,7 +90,7 @@ public abstract class ListMultimap<K extends @NonNull Object, @Out V extends @No
         }
     }
 
-    private static <K extends @NonNull Object, V extends @NonNull Object>
+    private static <K extends Object, V extends Object>
             ListMultimap<K,V> fromTrustedArray(Entry<K, List<V>>[] entries) {
         if (entries.length == 0) return empty();
         return new WheelMultimap<>(HashWheel.make(entries, Entry::key));
@@ -122,7 +130,7 @@ public abstract class ListMultimap<K extends @NonNull Object, @Out V extends @No
 
     /* IMMUTABLE IMPLEMENTATIONS */
 
-    private static abstract class ImmutableMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
+    private static abstract class ImmutableMultimap<K extends Object, @Out V extends Object>
             extends ListMultimap<K, V> { }
 
     private static final class EmptyMultimap extends ImmutableMultimap<Object, @NonNull Void> {
@@ -159,7 +167,7 @@ public abstract class ListMultimap<K extends @NonNull Object, @Out V extends @No
     }
 
     /** Multimap backed by a hash wheel. */
-    private static final class WheelMultimap<K extends @NonNull Object, V extends @NonNull Object>
+    private static final class WheelMultimap<K extends Object, V extends Object>
             extends ImmutableMultimap<K, V> {
 
         private final HashWheel<K, Entry<K, List<V>>> impl;

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,15 @@
 package me.sbasalaev.collection;
 
 import java.util.Iterator;
+import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import me.sbasalaev.annotation.Out;
 
 /**
  *
  * @author Sergey Basalaev
  */
-public abstract class SetMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
+public abstract class SetMultimap<K extends Object, @Out V extends Object>
     extends Multimap<K, V, Set<V>>
     implements Cloneable {
 
@@ -44,31 +44,38 @@ public abstract class SetMultimap<K extends @NonNull Object, @Out V extends @Non
     private static final SetMultimap<?, ?> EMPTY = new EmptyMultimap();
 
     /** Empty list multimap. */
-    public static <K extends @NonNull Object, V extends @NonNull Object> SetMultimap<K, V> empty() {
+    public static <K extends Object, V extends Object> SetMultimap<K, V> empty() {
         return (SetMultimap<K, V>) EMPTY;
     }
 
     /** Builder of immutable list multimaps. */
-    public static <K extends @NonNull Object, V extends @NonNull Object> Builder<K,V> build() {
+    public static <K extends Object, V extends Object> Builder<K,V> build() {
         return new Builder<>();
     }
 
-    public static final class Builder<K extends @NonNull Object, V extends @NonNull Object> {
+    /** Builder of immutable list multimaps. */
+    public static final class Builder<K extends Object, V extends Object> {
 
         private final MutableSetMultimap<K, V> collector = MutableSetMultimap.empty();
 
         private Builder() { }
 
+        /** Adds given entry to this builder. */
         public Builder<K,V> add(K key, V value) {
             collector.add(key, value);
             return this;
         }
 
+        /** Adds given entry to this builder. */
         public Builder<K,V> add(Entry<K,V> entry) {
             collector.add(entry.key(), entry.value());
             return this;
         }
 
+        /**
+         * Creates new immutable multimap with entries added to this builder.
+         * May be called multiple times.
+         */
         public SetMultimap<K,V> toSetMultimap() {
             if (collector.keySize() == 0) return empty();
             Entry<K, Set<V>>[] entries = new Entry[collector.keySize()];
@@ -81,7 +88,7 @@ public abstract class SetMultimap<K extends @NonNull Object, @Out V extends @Non
         }
     }
 
-    private static <K extends @NonNull Object, V extends @NonNull Object>
+    private static <K extends Object, V extends Object>
             SetMultimap<K,V> fromTrustedArray(Entry<K, Set<V>>[] entries) {
         if (entries.length == 0) return empty();
         return new WheelMultimap<>(HashWheel.make(entries, Entry::key));
@@ -141,7 +148,7 @@ public abstract class SetMultimap<K extends @NonNull Object, @Out V extends @Non
 
     /* IMMUTABLE IMPLEMENTATIONS */
 
-    private static abstract class ImmutableMultimap<K extends @NonNull Object, @Out V extends @NonNull Object>
+    private static abstract class ImmutableMultimap<K extends Object, @Out V extends Object>
             extends SetMultimap<K, V> { }
 
     private static final class EmptyMultimap extends ImmutableMultimap<Object, @NonNull Void> {
@@ -178,7 +185,7 @@ public abstract class SetMultimap<K extends @NonNull Object, @Out V extends @Non
     }
 
     /** Multimap backed by a hash wheel. */
-    private static final class WheelMultimap<K extends @NonNull Object, V extends @NonNull Object>
+    private static final class WheelMultimap<K extends Object, V extends Object>
             extends ImmutableMultimap<K, V> {
 
         private final HashWheel<K, Entry<K, Set<V>>> impl;

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,6 @@ import me.sbasalaev.Opt;
 import me.sbasalaev.Require;
 import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Collection of elements that may be traversed in sequence.
@@ -49,7 +48,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @author Sergey Basalaev
  */
-public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T> {
+public interface Traversable<@Out T extends Object> extends Iterable<T> {
 
     /* TRANSFORMERS */
 
@@ -106,7 +105,7 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
      * The returned traversable is a view of this object.
      */
     @SuppressWarnings("unchecked")
-    default <U extends @NonNull Object> Traversable<U> narrow(Class<U> clazz) {
+    default <U extends Object> Traversable<U> narrow(Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz");
         return (Traversable<U>) filter(clazz::isInstance);
     }
@@ -118,7 +117,7 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
      *
      * @see Iterators#map(java.util.Iterator, java.util.function.Function) 
      */
-    default <R extends @NonNull Object> Traversable<R> map(Function<? super T, ? extends R> mapping) {
+    default <R extends Object> Traversable<R> map(Function<? super T, ? extends R> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return new AbstractView<R>() {
             @Override
@@ -165,7 +164,7 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
 
     /** Applies {@code mapping} to the elements and chains the resulting traversables together. */
     @SuppressWarnings("unchecked")
-    default <R extends @NonNull Object> Traversable<R> chainMap(Function<? super T, ? extends Traversable<R>> mapping) {
+    default <R extends Object> Traversable<R> chainMap(Function<? super T, ? extends Traversable<R>> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return (Traversable<R>) map(mapping).<Traversable<?>>fold(List.empty(), Traversable::chain);
     }
@@ -205,7 +204,7 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
      * Starting from the {@code first}, applies {@code combine} to elements of the collection returning result.
      * The order of elements is determined by the iterator.
      */
-    default <R extends @NonNull Object> R fold(R first, BiFunction<? super R, ? super T, ? extends R> combine) {
+    default <R extends Object> R fold(R first, BiFunction<? super R, ? super T, ? extends R> combine) {
         Objects.requireNonNull(combine, "combine");
         var result = first;
         for (var item : this) {
@@ -284,11 +283,11 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
      * @param classifier function that assigns keys to elements of this traversable.
      *
      * @deprecated Use
-     *   {@link #groupedIntoSetsBy(java.util.function.Function) } or
-     *   {@link #groupedIntoListsBy(java.util.function.Function) } instead.
+     *   {@link #groupedIntoSets(java.util.function.Function) } or
+     *   {@link #groupedIntoLists(java.util.function.Function) } instead.
      */
     @Deprecated(since = "4.1")
-    public default <K extends @NonNull Object>
+    public default <K extends Object>
             Map<K, ? extends List<T>> groupedBy(Function<? super T, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         var map = MutableMap.<K, MutableList<T>>empty();
@@ -310,7 +309,7 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
      *
      * @since 4.1
      */
-    public default <K extends @NonNull Object>
+    public default <K extends Object>
             SetMultimap<K, T> groupedIntoSets(Function<? super T, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         var builder = SetMultimap.<K, T>build();
@@ -329,7 +328,7 @@ public interface Traversable<@Out T extends @NonNull Object> extends Iterable<T>
      *
      * @since 4.1
      */
-    public default <K extends @NonNull Object>
+    public default <K extends Object>
             ListMultimap<K, T> groupedIntoLists(Function<? super T, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         var builder = ListMultimap.<K, T>build();

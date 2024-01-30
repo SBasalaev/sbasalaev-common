@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,9 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import me.sbasalaev.Opt;
 import me.sbasalaev.Require;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Factory methods for iterators.
@@ -44,14 +43,14 @@ public final class Iterators {
 
     private Iterators() { }
 
-    private static final Iterator<?> EMPTY = new Iterator<@NonNull Void>() {
+    private static final Iterator<?> EMPTY = new Iterator<Void>() {
         @Override
         public boolean hasNext() {
             return false;
         }
 
         @Override
-        public @NonNull Void next() {
+        public Void next() {
             throw new NoSuchElementException();
         }
     };
@@ -60,13 +59,13 @@ public final class Iterators {
 
     /** Empty iterator. */
     @SuppressWarnings("unchecked")
-    public static <T extends @Nullable Object> Iterator<T> empty() {
+    public static <T> Iterator<T> empty() {
         return (Iterator<T>) EMPTY;
     }
 
     /** Iterator over given elements in given order. */
     @SafeVarargs
-    public static <T extends @Nullable Object> Iterator<T> of(T... elements) {
+    public static <T> Iterator<T> of(T... elements) {
         return ofRange(elements, 0, elements.length);
     }
 
@@ -75,7 +74,7 @@ public final class Iterators {
      * 
      * @since 3.2
      */
-    public static <T extends @Nullable Object> Iterator<T> ofRange(T[] elements, int offset, int size) {
+    public static <T> Iterator<T> ofRange(T[] elements, int offset, int size) {
         Objects.checkFromIndexSize(offset, size, elements.length);
         if (size == 0) return empty();
         return new Iterator<T>() {
@@ -123,7 +122,7 @@ public final class Iterators {
      * Wraps elements produced by given iterator into {@code Opt} values.
      * @since 3.2
      */
-    public static <T extends @NonNull Object>
+    public static <T extends Object>
             Iterator<Opt<T>> wrapped(Iterator<@Nullable T> iterator) {
         return new Iterator<Opt<T>>() {
             @Override
@@ -139,7 +138,7 @@ public final class Iterators {
     }
 
     /** Filters out iterator elements that do not satisfy {@code condition}. */
-    public static <T extends @Nullable Object>
+    public static <T>
             Iterator<T> filter(Iterator<T> iterator, Predicate<? super T> condition) {
         Objects.requireNonNull(iterator, "iterator");
         Objects.requireNonNull(condition, "condition");
@@ -179,8 +178,7 @@ public final class Iterators {
     }
 
     /** Applies {@code mapping} to all elements of {@code iterator}. */
-    public static <T extends @Nullable Object, R extends @Nullable Object>
-            Iterator<R> map(Iterator<T> iterator, Function<? super T, ? extends R> mapping) {
+    public static <T, R> Iterator<R> map(Iterator<T> iterator, Function<? super T, ? extends R> mapping) {
         Objects.requireNonNull(iterator, "iterator");
         Objects.requireNonNull(mapping, "mapping");
         return new Iterator<R>() {
@@ -206,8 +204,7 @@ public final class Iterators {
      * The result first yields elements of the {@code first} iterator,
      * and once it is exhausted, elements of the {@code second}.
      */
-    public static <T extends @Nullable Object>
-            Iterator<T> chain(Iterator<? extends T> first, Iterator<? extends T> second) {
+    public static <T> Iterator<T> chain(Iterator<? extends T> first, Iterator<? extends T> second) {
         Objects.requireNonNull(first, "first");
         Objects.requireNonNull(second, "second");
         return new Iterator<T>() {
@@ -228,8 +225,7 @@ public final class Iterators {
     }
 
     /** Combines values produced by iterators using {@code combiner}. */
-    public static <T extends @Nullable Object, U extends @Nullable Object, R extends @Nullable Object>
-            Iterator<R> zipBy(Iterator<T> first, Iterator<U> second,
+    public static <T, U, R> Iterator<R> zipBy(Iterator<T> first, Iterator<U> second,
             BiFunction<? super T, ? super U, ? extends R> combiner) {
         Objects.requireNonNull(first, "first");
         Objects.requireNonNull(second, "second");
@@ -247,9 +243,8 @@ public final class Iterators {
         };
     }
 
-    /** Limit number of elements produced by {@code iterator} by {@code cap}. */
-    public static <T extends @Nullable Object>
-            Iterator<T> limit(Iterator<T> iterator, int cap) {
+    /** Limits number of elements produced by {@code iterator} by {@code cap}. */
+    public static <T> Iterator<T> limit(Iterator<T> iterator, int cap) {
         Objects.requireNonNull(iterator, "iterator");
         Require.nonNegative(cap, "cap");
         return new Iterator<T>() {
@@ -271,8 +266,10 @@ public final class Iterators {
         };
     }
 
-    public static <T extends @Nullable Object>
-            Iterator<T> takeWhile(Iterator<T> iterator, Predicate<? super T> condition) {
+    /**
+     * Takes values from {@code iterator} until given {@code condition} fails.
+     */
+    public static <T> Iterator<T> takeWhile(Iterator<T> iterator, Predicate<? super T> condition) {
         Objects.requireNonNull(iterator, "iterator");
         Objects.requireNonNull(condition, "condition");
         return new Iterator<T>() {
@@ -301,7 +298,7 @@ public final class Iterators {
             }
 
             // works correctly, but the checker cannot cast
-            // from @Nullable T to just T (which still may be nullable).
+            // from @Nullable T to just T (which still is a nullable type).
             @SuppressWarnings("nullness")
             @Override
             public T next() {

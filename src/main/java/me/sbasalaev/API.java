@@ -24,10 +24,10 @@
 package me.sbasalaev;
 
 import java.util.function.Function;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import me.sbasalaev.collection.List;
 import me.sbasalaev.collection.Set;
 import me.sbasalaev.collection.Traversable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Useful utilities meant to be imported statically.

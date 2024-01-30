@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022, 2023 Sergey Basalaev.
+ * Copyright 2015, 2022-2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author Sergey Basalaev
  */
-public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Object>
+public abstract class Map<K extends Object, @Out V extends Object>
     extends Multimap<K, V, Opt<V>>
     implements Cloneable {
 
@@ -52,18 +52,18 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
 
     /** Map with no entries. */
     @SuppressWarnings("unchecked")
-    public static <K extends @NonNull Object, V extends @NonNull Object> Map<K, V> empty() {
+    public static <K extends Object, V extends Object> Map<K, V> empty() {
         return (Map<K, V>) EMPTY;
     }
 
     /** Map containing given entry. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             Map<K, V> of(K key, V value) {
         return new SingletonMap<>(Objects.requireNonNull(key), Objects.requireNonNull(value));
     }
 
     /** Map containing given entries. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             Map<K, V> of(K k1, V v1, K k2, V v2) {
         return fromTrustedArray(
             Entry.of(k1, v1),
@@ -72,7 +72,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Map containing given entries. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
         return fromTrustedArray(
             Entry.of(k1, v1),
@@ -82,7 +82,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Map containing given entries. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         return fromTrustedArray(
             Entry.of(k1, v1),
@@ -93,7 +93,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Map containing given entries. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
         return fromTrustedArray(
             Entry.of(k1, v1),
@@ -105,7 +105,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Map containing given entries. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             Map<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
         return fromTrustedArray(
             Entry.of(k1, v1),
@@ -118,7 +118,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Builder of immutable maps. */
-    public static final class Builder<K extends @NonNull Object, V extends @NonNull Object> {
+    public static final class Builder<K extends Object, V extends Object> {
 
         private final MutableList<Entry<K,V>> entries = MutableList.empty();
 
@@ -154,7 +154,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Builds map from given entries. */
-    public static <K extends @NonNull Object, V extends @NonNull Object> Map.Builder<K, V> build() {
+    public static <K extends Object, V extends Object> Map.Builder<K, V> build() {
         return new Builder<>();
     }
 
@@ -163,8 +163,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
      * The array of elements is not cloned.
      */
     @SafeVarargs
-    static <K extends @NonNull Object, V extends @NonNull Object>
-            Map<K, V> fromTrustedArray(Entry<K,V>... entries) {
+    static <K extends Object, V extends Object> Map<K, V> fromTrustedArray(Entry<K,V>... entries) {
         return switch (entries.length) {
             case 0 -> empty();
             case 1 -> {
@@ -176,7 +175,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Map view of given java map. */
-    public static <K extends @NonNull Object, V extends @NonNull Object>
+    public static <K extends Object, V extends Object>
             Map<K,V> fromJava(java.util.Map<K,V> javaMap) {
         return new Map<K, V>() {
             @Override
@@ -286,7 +285,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** View of this map with given mapping applied to values. */
-    public <W extends @NonNull Object> Map<K, W> mapValues(Function<? super V, ? extends W> mapping) {
+    public <W extends Object> Map<K, W> mapValues(Function<? super V, ? extends W> mapping) {
         Objects.requireNonNull(mapping);
         return new Map<K, W>() {
             @Override
@@ -436,7 +435,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /* IMMUTABLE IMPLEMENTATIONS */
-    private static abstract class ImmutableMap<K extends @NonNull Object, @Out V extends @NonNull Object> extends Map<K, V> { }
+    private static abstract class ImmutableMap<K extends Object, @Out V extends Object> extends Map<K, V> { }
 
     /** Singleton map with no elements. */
     private static final class EmptyMap extends ImmutableMap<Object, @NonNull Void> {
@@ -459,7 +458,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
         }
 
         @Override
-        public <W extends @NonNull Object>
+        public <W extends Object>
                 Map<Object, W> mapValues(Function<? super @NonNull Void, ? extends W> mapping) {
             Objects.requireNonNull(mapping);
             return Map.empty();
@@ -472,7 +471,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Map containing only one entry. */
-    private static final class SingletonMap<K extends @NonNull Object, V extends @NonNull Object> extends ImmutableMap<K,V> {
+    private static final class SingletonMap<K extends Object, V extends Object> extends ImmutableMap<K,V> {
 
         private final K key;
         private final V value;
@@ -504,7 +503,7 @@ public abstract class Map<K extends @NonNull Object, @Out V extends @NonNull Obj
     }
 
     /** Map backed by a hash wheel. */
-    private static final class WheelMap<K extends @NonNull Object, V extends @NonNull Object> extends ImmutableMap<K, V> {
+    private static final class WheelMap<K extends Object, V extends Object> extends ImmutableMap<K, V> {
 
         private final HashWheel<K, Entry<K, V>> wheel;
 

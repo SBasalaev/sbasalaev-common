@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,14 +30,13 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * List that can be mutated.
  *
  * @author Sergey Basalaev
  */
-public abstract class MutableList<T extends @NonNull Object>
+public abstract class MutableList<T extends Object>
         extends List<T> implements MutableCollection<T> {
 
     /* CONSTRUCTORS */
@@ -45,18 +44,18 @@ public abstract class MutableList<T extends @NonNull Object>
     MutableList() { }
 
     /** New mutable list that is initially empty. */
-    public static <T extends @NonNull Object> MutableList<T> empty() {
+    public static <T extends Object> MutableList<T> empty() {
         return new DefaultImpl<>();
     }
 
     /** New mutable list that initially contains given elements. */
     @SafeVarargs
-    public static <T extends @NonNull Object> MutableList<T> of(T... elements) {
+    public static <T extends Object> MutableList<T> of(T... elements) {
         return of (List.of(elements));
     }
 
     /** New mutable list that initially contains given elements. */
-    public static <T extends @NonNull Object> MutableList<T> of(Collection<? extends T> elements) {
+    public static <T extends Object> MutableList<T> of(Collection<? extends T> elements) {
         var list = new DefaultImpl<T>();
         list.addAll(elements);
         return list;
@@ -143,7 +142,7 @@ public abstract class MutableList<T extends @NonNull Object>
 
     /* DEFAULT IMPLEMENTATION */
 
-    private static final class DefaultImpl<T extends @NonNull Object> extends MutableList<T> {
+    private static final class DefaultImpl<T extends Object> extends MutableList<T> {
 
         private final ArrayList<T> impl;
 

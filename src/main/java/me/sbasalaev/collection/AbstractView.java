@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
  */
 package me.sbasalaev.collection;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -31,7 +30,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author Sergey Basalaev
  */
-abstract class AbstractView<T extends @NonNull Object> implements Traversable<T> {
+abstract class AbstractView<T extends Object> implements Traversable<T> {
 
     @Override
     public boolean equals(@Nullable Object obj) {

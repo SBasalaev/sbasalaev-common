@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.IntFunction;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -35,7 +34,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author Sergey Basalaev
  */
-public abstract class MutableSet<T extends @NonNull Object>
+public abstract class MutableSet<T extends Object>
         extends Set<T> implements MutableCollection<T> {
 
     /* CONSTRUCTORS */
@@ -44,18 +43,18 @@ public abstract class MutableSet<T extends @NonNull Object>
     public MutableSet() { }
 
     /** Returns new mutable set that is initially empty. */
-    public static <T extends @NonNull Object> MutableSet<T> empty() {
+    public static <T extends Object> MutableSet<T> empty() {
         return new DefaultImpl<>();
     }
 
     /** Returns new mutable set that initially contains given elements. */
     @SafeVarargs
-    public static <T extends @NonNull Object> MutableSet<T> of(T... elements) {
+    public static <T extends Object> MutableSet<T> of(T... elements) {
         return of(List.of(elements));
     }
 
     /** Returns new mutable set that initially contains given elements. */
-    public static <T extends @NonNull Object> MutableSet<T> of(Collection<? extends T> elements) {
+    public static <T extends Object> MutableSet<T> of(Collection<? extends T> elements) {
         MutableSet<T> set = empty();
         set.addAll(elements);
         return set;
@@ -63,7 +62,7 @@ public abstract class MutableSet<T extends @NonNull Object>
 
     /* IMPLEMENTATION */
 
-    private static final class DefaultImpl<T extends @NonNull Object> extends MutableSet<T> {
+    private static final class DefaultImpl<T extends Object> extends MutableSet<T> {
 
         private final HashSet<T> impl;
 

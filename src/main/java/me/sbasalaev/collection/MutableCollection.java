@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,14 +25,13 @@ package me.sbasalaev.collection;
 
 import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Common methods of {@code MutableList} and {@code MutableSet}.
  *
  * @author Sergey Basalaev
  */
-public interface MutableCollection<T extends @NonNull Object> extends Traversable<T> {
+public interface MutableCollection<T extends Object> extends Traversable<T> {
 
     /**
      * Adds element to this collection.

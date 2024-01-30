@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022, 2023 Sergey Basalaev
+ * Copyright 2015, 2022-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author Sergey Basalaev
  */
-public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> {
+public abstract class Set<@Out T extends Object> extends Collection<T> {
 
     /* CONSTRUCTORS */
 
@@ -348,7 +348,7 @@ public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> 
     }
 
     /** Set containing only one element. */
-    private static final class SingletonSet<T extends @NonNull Object> extends ImmutableSet<T> {
+    private static final class SingletonSet<T extends Object> extends ImmutableSet<T> {
 
         private final T e1;
 
@@ -373,7 +373,7 @@ public abstract class Set<@Out T extends @NonNull Object> extends Collection<T> 
     }
 
     /** Immutable set backed by a hash wheel. */
-    private static final class RegularSet<T extends @NonNull Object> extends ImmutableSet<T> {
+    private static final class RegularSet<T extends Object> extends ImmutableSet<T> {
 
         private final HashWheel<Object,T> wheel;
 

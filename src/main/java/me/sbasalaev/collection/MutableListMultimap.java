@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 package me.sbasalaev.collection;
 
 import java.util.function.Function;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Mutable mapping of keys to lists of values.
@@ -32,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class MutableListMultimap<K extends @NonNull Object, V extends @NonNull Object>
+public abstract class MutableListMultimap<K extends Object, V extends Object>
     extends ListMultimap<K, V>
     implements MultimapMutator<K, V, List<V>> {
 
@@ -40,11 +39,11 @@ public abstract class MutableListMultimap<K extends @NonNull Object, V extends @
     public MutableListMultimap() { }
 
     /** Returns new mutable multimap that is initially empty. */
-    public static <K extends @NonNull Object, V extends @NonNull Object> MutableListMultimap<K, V> empty() {
+    public static <K extends Object, V extends Object> MutableListMultimap<K, V> empty() {
         return new DefaultImpl<>();
     }
 
-    private static final class DefaultImpl<K extends @NonNull Object, V extends @NonNull Object>
+    private static final class DefaultImpl<K extends Object, V extends Object>
             extends MutableListMultimap<K, V> {
 
         private final MutableMap<K, MutableList<V>> impl = MutableMap.empty();

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2018 Sergey Basalaev.
+ * Copyright 2018, 2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@ package me.sbasalaev.staque;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import me.sbasalaev.annotation.Out;
 
 /**
@@ -37,7 +36,7 @@ import me.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public interface Feed<@Out T extends @NonNull Object> extends Iterable<T> {
+public interface Feed<@Out T extends Object> extends Iterable<T> {
 
     /** Returns true if the feed is empty. */
     boolean isEmpty();

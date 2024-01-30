@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,9 @@
 package me.sbasalaev.collection;
 
 import java.util.Iterator;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import me.sbasalaev.Opt;
 import me.sbasalaev.annotation.Out;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Common superclass for maps and multimaps.
@@ -41,12 +40,12 @@ import me.sbasalaev.annotation.Out;
  *
  * @param <K> type of the keys of this multimap.
  * @param <V> type of the values of this multimap.
- * @param <C> type of the collections of values corresponding to the single key.
+ * @param <C> type of the collections of values corresponding to a single key.
  * 
  * @author Sergey Basalaev
  * @since 3.2
  */
-public abstract class Multimap<K extends @NonNull Object, @Out V extends @NonNull Object, @Out C extends @NonNull Collection<V>> {
+public abstract class Multimap<K extends Object, @Out V extends Object, @Out C extends Collection<V>> {
 
     /** Constructor for subclasses. */
     public Multimap() { }

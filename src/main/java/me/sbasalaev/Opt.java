@@ -27,11 +27,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import me.sbasalaev.annotation.Out;
 import me.sbasalaev.collection.Collection;
 import me.sbasalaev.collection.Iterators;
 import me.sbasalaev.collection.Traversable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Optional value.

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Sergey Basalaev.
+ * Copyright 2017, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,8 @@ package me.sbasalaev;
 
 import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import me.sbasalaev.annotation.Out;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
 /**
  * Lazily evaluated value.
@@ -36,7 +35,7 @@ import me.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public final class Lazy<@Out T extends @NonNull Object> implements Supplier<T> {
+public final class Lazy<@Out T extends Object> implements Supplier<T> {
 
     private @MonotonicNonNull T value;
     private final Supplier<T> supplier;

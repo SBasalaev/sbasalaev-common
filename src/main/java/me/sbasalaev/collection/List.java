@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2023 Sergey Basalaev.
+ * Copyright 2015, 2023-2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,15 +27,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
+import me.sbasalaev.API;
+import me.sbasalaev.Require;
+import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.index.qual.GTENegativeOne;
 import org.checkerframework.checker.index.qual.IndexFor;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.index.qual.SameLen;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import me.sbasalaev.API;
-import me.sbasalaev.Require;
-import me.sbasalaev.annotation.Out;
 
 /**
  * Sequence of elements numbered by integer indices.
@@ -44,7 +44,7 @@ import me.sbasalaev.annotation.Out;
  *
  * @author Sergey Basalaev
  */
-public abstract class List<@Out T extends @NonNull Object> extends Collection<T> {
+public abstract class List<@Out T extends Object> extends Collection<T> {
 
     /* CONSTRUCTORS */
 
@@ -55,13 +55,13 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
 
     /** Empty list. */
     @SuppressWarnings("unchecked")
-    public static <T extends @NonNull Object> List<T> empty() {
+    public static <T extends Object> List<T> empty() {
         return (List<T>) EMPTY;
     }
 
     /** List of given elements. */
     @SafeVarargs
-    public static <T extends @NonNull Object> List<T> of(T... elements) {
+    public static <T extends Object> List<T> of(T... elements) {
         if (elements.length == 0) return empty();
         return new ArrayList<>(Require.noNulls(elements).clone());
     }
@@ -71,14 +71,14 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
      * Array is not cloned and is not checked for nulls.
      */
     @SafeVarargs
-    static <T extends @NonNull Object> List<T> fromTrustedArray(T... elements) {
+    static <T extends Object> List<T> fromTrustedArray(T... elements) {
         return new ArrayList<>(elements);
     }
 
     /** Concatenates several lists together. */
     @SafeVarargs
     @SuppressWarnings("unchecked")
-    public static <T extends @NonNull Object> List<T> concatenated(List<? extends T>... lists) {
+    public static <T extends Object> List<T> concatenated(List<? extends T>... lists) {
         var listOfLists = List.of(lists);
         int firstNonEmpty = listOfLists.findIndex(List::nonEmpty);
         if (firstNonEmpty >= 0) {
@@ -99,7 +99,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /** List view of given Java list. */
-    public static <T extends @NonNull Object> List<T> fromJava(java.util.List<T> javaList) {
+    public static <T extends Object> List<T> fromJava(java.util.List<T> javaList) {
         return new List<>() {
             @Override
             public T get(@NonNegative int index) {
@@ -124,7 +124,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /** List that repeats the same element given number of times. */
-    public static <T extends @NonNull Object> List<T> repeat(T element, @NonNegative int times) {
+    public static <T extends Object> List<T> repeat(T element, @NonNegative int times) {
         Require.nonNegative(times, "times");
         if (times == 0) return empty();
         return new Repeat<>(element, times);
@@ -142,14 +142,14 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
 
     /**
      * The last valid index in this list.
-     * Returns {@code size()-1}.
+     * @return {@code size()-1}.
      */
     public @GTENegativeOne int lastIndex() {
         return size() - 1;
     }
 
     /**
-     * Returns the first element of this list.
+     * The first element of this list.
      * @throws NoSuchElementException if the list is empty.
      * @see #last()
      */
@@ -164,7 +164,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /**
-     * Returns the last element of this list.
+     * The last element of this list.
      * @throws NoSuchElementException if the list is empty.
      * @see #first()
      */
@@ -178,7 +178,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /**
-     * Returns the index of the first element satisfying given condition.
+     * The index of the first element satisfying given condition.
      * Returns {@code -1} if there is no such element.
      */
     public @GTENegativeOne int findIndex(Predicate<? super T> condition) {
@@ -186,7 +186,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /**
-     * Returns the index of the first element satisfying given condition.
+     * The index of the first element satisfying given condition.
      * Returns {@code -1} if there is no such element.
      */
     public @GTENegativeOne int findIndex(Predicate<? super T> condition, @NonNegative int fromIndex) {
@@ -199,7 +199,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /**
-     * Returns the index of the last element satisfying given condition.
+     * The index of the last element satisfying given condition.
      * Returns {@code -1} if there is no such element.
      */
     public @GTENegativeOne int findLastIndex(Predicate<? super T> condition) {
@@ -274,7 +274,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
      *
      * @since 4.0
      */
-    public <R extends @NonNull Object> Traversable<R> pairs(BiFunction<? super T, ? super T, ? extends R> combiner) {
+    public <R extends Object> Traversable<R> pairs(BiFunction<? super T, ? super T, ? extends R> combiner) {
         return new AbstractView<R>() {
             @Override
             public Iterator<R> iterator() {
@@ -404,7 +404,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
      * sizes of two lists and the element at each index is a combination by {@code zipper}
      * of the elements of {@code this} and {@code other} at the same index.
      */
-    public <U extends @NonNull Object, R extends @NonNull Object>
+    public <U extends Object, R extends Object>
             List<R> zip(List<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         return new List<R>() {
             @Override
@@ -465,7 +465,10 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
         };
     }
 
-    /** Returns shallow immutable copy of this list. */
+    /**
+     * Returns shallow immutable copy of this list.
+     * May return the same instance if the list is immutable.
+     */
     @Override
     public final List<T> clone() {
         if (isEmpty()) return empty();
@@ -481,8 +484,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
      * The returned list is a view that is affected immediately by the changes to this list.
      */
     @Override
-    public <R extends @NonNull Object>
-            List<R> map(Function<? super T, ? extends R> mapping) {
+    public <R extends Object> List<R> map(Function<? super T, ? extends R> mapping) {
         return new List<R>() {
             @Override
             public R get(@NonNegative int index) {
@@ -506,8 +508,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
      * The returned list is immutable and is unaffected by the changes to this list.
      */
     @Override
-    public <R extends @NonNull Object>
-            List<R> mapped(Function<? super T, ? extends R> mapping) {
+    public <R extends Object> List<R> mapped(Function<? super T, ? extends R> mapping) {
         @SuppressWarnings("unchecked")
         R[] array = (R[]) new Object[size()];
         for (int i = 0; i < array.length; i++) {
@@ -566,7 +567,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
 
     /* IMPLEMENTATIONS */
 
-    private static abstract class ImmutableList<T extends @NonNull Object> extends List<T> {
+    private static abstract class ImmutableList<T extends Object> extends List<T> {
 
         private ImmutableList() { }
 
@@ -627,13 +628,13 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
         }
 
         @Override
-        public <R extends @NonNull Object>
+        public <R extends Object>
             List<R> map(Function<? super @NonNull Void, ? extends R> mapping) {
             return List.empty();
         }
 
         @Override
-        public <R extends @NonNull Object>
+        public <R extends Object>
             List<R> mapped(Function<? super @NonNull Void, ? extends R> mapping) {
             return List.empty();
         }
@@ -649,13 +650,13 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
         }
 
         @Override
-        public <R extends @NonNull Object>
+        public <R extends Object>
                 Traversable<R> pairs(BiFunction<? super @NonNull Void, ? super @NonNull Void, ? extends R> combiner) {
             return List.empty();
         }
 
         @Override
-        public <U extends @NonNull Object, R extends @NonNull Object>
+        public <U extends Object, R extends Object>
                 List<R> zip(List<U> other, BiFunction<? super @NonNull Void, ? super U, ? extends R> zipper) {
             return List.empty();
         }
@@ -677,7 +678,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
     }
 
     /** Immutable list backed by an array. */
-    private static final class ArrayList<T extends @NonNull Object> extends ImmutableList<T> {
+    private static final class ArrayList<T extends Object> extends ImmutableList<T> {
 
         private final T @SameLen("this") [] elements;
 
@@ -718,7 +719,7 @@ public abstract class List<@Out T extends @NonNull Object> extends Collection<T>
         }
     }
 
-    private static final class Repeat<T extends @NonNull Object> extends ImmutableList<T> {
+    private static final class Repeat<T extends Object> extends ImmutableList<T> {
 
         private final T element;
         private final @NonNegative int size;

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,15 @@
  */
 package me.sbasalaev.collection;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 /**
  * Common mutating methods for all mutable multimaps.
  *
+ * @param <K> type of the keys of this multimap.
+ * @param <V> type of the values of this multimap.
+ * @param <C> type of the collections of values corresponding to a single key.
  * @author Sergey Basalaev
  */
-public interface MultimapMutator<K extends @NonNull Object, V extends @NonNull Object, C extends @NonNull Collection<V>> {
+public interface MultimapMutator<K extends Object, V extends Object, C extends Collection<V>> {
 
     /**
      * Puts key-value pair in this multimap.

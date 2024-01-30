@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -42,7 +41,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @author Sergey Basalaev
  */
-final class HashWheel<K extends @NonNull Object, E extends @NonNull Object>
+final class HashWheel<K extends Object, E extends Object>
         implements Iterable<E> {
 
     /** Elements in the order given by set or map constructor. */
@@ -121,7 +120,7 @@ final class HashWheel<K extends @NonNull Object, E extends @NonNull Object>
     // Entries array should have no nulls at the beginning, then we abuse it
     // and store nulls in place of duplicates. The function is only ever called
     // with trusted array.
-    static <K extends @NonNull Object, E extends @NonNull Object>
+    static <K extends Object, E extends Object>
             HashWheel<K, E> make(E[] entries, Function<E, K> extractKey) {
         int entriesLen = entries.length;
         int size = 0;

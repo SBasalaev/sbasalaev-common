@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015, 2022 Sergey Basalaev.
+ * Copyright 2015, 2022, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,21 @@
  */
 package me.sbasalaev.collection;
 
-import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import me.sbasalaev.annotation.Out;
+import org.checkerframework.checker.index.qual.NonNegative;
 
 /**
  * List element with its corresponding index.
  *
  * @author Sergey Basalaev
  */
-public record IndexedElement<@Out T extends @NonNull Object>(@NonNegative int index, T element) {
+public record IndexedElement<@Out T extends Object>(@NonNegative int index, T element) {
 
     /**
      * Creates an instance of indexed element.
      * This is a legacy compatibility method from before IndexedElement became a record.
      */
-    public static <T extends @NonNull Object> IndexedElement<T> of(@NonNegative int index, T element) {
+    public static <T extends Object> IndexedElement<T> of(@NonNegative int index, T element) {
         return new IndexedElement<>(index, element);
     }
 

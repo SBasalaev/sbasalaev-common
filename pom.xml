@@ -33,6 +33,7 @@
                                 <link>https://checkerframework.org/api/</link>
                             </links>
                             <doclint>all,-missing</doclint>
+                            <notimestamp>true</notimestamp>
                         </configuration>
                     </plugin>
                     <plugin>

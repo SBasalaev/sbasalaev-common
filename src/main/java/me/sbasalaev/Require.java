@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@ package me.sbasalaev;
 
 import java.util.function.Supplier;
 import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -43,7 +42,7 @@ public final class Require {
      * @throws NullPointerException if either {@code array} or any of its elements is {@code null}.
      */
     @SuppressWarnings("nullness") // NPEs here are expected behavior
-    public static <T extends @NonNull Object> T[] noNulls(@Nullable T @Nullable [] array) {
+    public static <T extends Object> T[] noNulls(@Nullable T @Nullable [] array) {
         for (T item : array) { // implicit NPE
             if (item == null) throw new NullPointerException("array contains nulls");
         }

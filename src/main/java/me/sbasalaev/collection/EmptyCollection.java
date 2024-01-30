@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,14 +58,14 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
 
     @Override
     @SuppressWarnings("unchecked")
-    default <U extends @NonNull Object> Traversable<U> narrow(Class<U> clazz) {
+    default <U extends Object> Traversable<U> narrow(Class<U> clazz) {
         Objects.requireNonNull(clazz, "clazz");
         return (Traversable<U>) this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default <R extends @NonNull Object>
+    default <R extends Object>
             Traversable<R> map(Function<? super @NonNull Void, ? extends R> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return (Traversable<R>) this;
@@ -78,7 +78,7 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
 
     @Override
     @SuppressWarnings("unchecked")
-    default <R extends @NonNull Object>
+    default <R extends Object>
             Traversable<R> chainMap(Function<? super @NonNull Void, ? extends Traversable<R>> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return (Traversable<R>) this;
@@ -101,20 +101,22 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
 
     @Override
     @Deprecated
-    default <K extends @NonNull Object>
+    default <K extends Object>
             Map<K, ? extends List<@NonNull Void>> groupedBy(Function<? super @NonNull Void, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         return Map.empty();
     }
 
     @Override
-    default <K> ListMultimap<K, Void> groupedIntoLists(Function<? super Void, ? extends K> classifier) {
+    default <K extends Object>
+            ListMultimap<K, @NonNull Void> groupedIntoLists(Function<? super @NonNull Void, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         return ListMultimap.empty();
     }
 
     @Override
-    default <K> SetMultimap<K, Void> groupedIntoSets(Function<? super Void, ? extends K> classifier) {
+    default <K extends Object>
+            SetMultimap<K, @NonNull Void> groupedIntoSets(Function<? super @NonNull Void, ? extends K> classifier) {
         Objects.requireNonNull(classifier, "classifier");
         return SetMultimap.empty();
     }
