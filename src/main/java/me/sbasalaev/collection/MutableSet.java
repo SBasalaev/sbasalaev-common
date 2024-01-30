@@ -26,6 +26,7 @@ package me.sbasalaev.collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.IntFunction;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -83,6 +84,11 @@ public abstract class MutableSet<T extends Object>
         @Override
         public Iterator<T> iterator() {
             return impl.iterator();
+        }
+
+        @Override
+        public Spliterator<T> spliterator() {
+            return impl.spliterator();
         }
 
         @Override

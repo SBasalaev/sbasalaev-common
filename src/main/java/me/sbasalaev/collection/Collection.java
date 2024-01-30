@@ -24,9 +24,12 @@
 package me.sbasalaev.collection;
 
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -118,6 +121,22 @@ public abstract class Collection<@Out T extends Object>
             array[index] = item;
             index++;
         }
+    }
+
+    /**
+     * Creates a {@link Spliterator} over elements of this collection.
+     * The spliterator reports {@link Spliterator#NONNULL} and {@link Spliterator#SIZED}.
+     */
+    @Override
+    public abstract Spliterator<T> spliterator();
+
+    /**
+     * Returns a sequential {@code Stream} with this collection as its source.
+     * 
+     * @since 4.1
+     */
+    public Stream<T> stream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 
     /**

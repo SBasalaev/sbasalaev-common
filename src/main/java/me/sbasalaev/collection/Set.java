@@ -25,6 +25,7 @@ package me.sbasalaev.collection;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -250,6 +251,12 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
         return fromTrustedArray(array);
     }
 
+    @Override
+    public Spliterator<T> spliterator() {
+        return java.util.Spliterators.spliterator(iterator(), size(),
+            Spliterator.DISTINCT | Spliterator.NONNULL);
+    }
+
     /**
      * Whether given object is equal to this set.
      * Two sets are equal if they contain the same elements, i.e.
@@ -344,6 +351,11 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
         public void fillArray(@Nullable Object[] array, int fromIndex) {
             Objects.checkFromIndexSize(fromIndex, 0, array.length);
         }
+
+        @Override
+        public Spliterator<@NonNull Void> spliterator() {
+            return Spliterators.EMPTY;
+        }
     }
 
     /** Set containing only one element. */
@@ -393,6 +405,11 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
         @Override
         public Iterator<T> iterator() {
             return wheel.iterator();
+        }
+
+        @Override
+        public Spliterator<T> spliterator() {
+            return wheel.spliterator();
         }
 
         @Override

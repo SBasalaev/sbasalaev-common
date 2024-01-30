@@ -23,13 +23,13 @@
  */
 package me.sbasalaev.collection;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
+import me.sbasalaev.collection.Collection;
+import me.sbasalaev.collection.List;
+import me.sbasalaev.collection.Set;
 
 /**
  * List that can be mutated.
@@ -198,6 +198,11 @@ public abstract class MutableList<T extends Object>
         @Override
         public Iterator<T> iterator() {
             return impl.iterator();
+        }
+
+        @Override
+        public Spliterator<T> spliterator() {
+            return impl.spliterator();
         }
 
         @Override

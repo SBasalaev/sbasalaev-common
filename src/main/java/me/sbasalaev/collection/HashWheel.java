@@ -26,6 +26,7 @@ package me.sbasalaev.collection;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -81,6 +82,11 @@ final class HashWheel<K extends Object, E extends Object>
     @Override
     public Iterator<E> iterator() {
         return Iterators.of(elements);
+    }
+
+    @Override
+    public Spliterator<E> spliterator() {
+        return java.util.Spliterators.spliterator(elements, Spliterator.IMMUTABLE | Spliterator.DISTINCT | Spliterator.NONNULL);
     }
 
     public Set<E> toSet() {

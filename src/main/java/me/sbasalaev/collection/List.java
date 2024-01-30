@@ -26,6 +26,7 @@ package me.sbasalaev.collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.*;
 import me.sbasalaev.API;
 import me.sbasalaev.Require;
@@ -41,6 +42,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @author Sergey Basalaev
  */
 public abstract class List<@Out T extends Object> extends Collection<T> {
+
+    private static final int IMMUTABLE_CHARACTERISTICS =
+        Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED;;
 
     /* CONSTRUCTORS */
 
@@ -110,6 +114,11 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
             @Override
             public Iterator<T> iterator() {
                 return javaList.iterator();
+            }
+
+            @Override
+            public Spliterator<T> spliterator() {
+                return javaList.spliterator();
             }
 
             @Override
@@ -462,6 +471,17 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     }
 
     /**
+     * Creates a {@link Spliterator} over elements of this list.
+     * The spliterator reports {@link Spliterator#NONNULL},
+     * {@link Spliterator#SIZED} and {@link Spliterator#ORDERED}.
+     */
+    @Override
+    public Spliterator<T> spliterator() {
+        return java.util.Spliterators.spliterator(iterator(), size(),
+            Spliterator.NONNULL | Spliterator.SIZED | Spliterator.ORDERED);
+    }
+
+    /**
      * Returns shallow immutable copy of this list.
      * May return the same instance if the list is immutable.
      */
@@ -495,6 +515,11 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
             @Override
             public Iterator<R> iterator() {
                 return Iterators.map(List.this.iterator(), mapping);
+            }
+
+            @Override
+            public Spliterator<R> spliterator() {
+                return Spliterators.mapped(List.this.spliterator(), mapping);
             }
         };
     }
@@ -671,6 +696,11 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         public void fillArray(@Nullable Object[] array, int fromIndex) {
             Objects.checkFromIndexSize(fromIndex, 0, array.length);
         }
+
+        @Override
+        public Spliterator<@NonNull Void> spliterator() {
+            return EmptySpliterator.INSTANCE;
+        }
     }
 
     /** Immutable list backed by an array. */
@@ -695,6 +725,11 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         @Override
         public Iterator<T> iterator() {
             return Iterators.of(elements);
+        }
+
+        @Override
+        public Spliterator<T> spliterator() {
+            return java.util.Spliterators.spliterator(elements, IMMUTABLE_CHARACTERISTICS);
         }
 
         @Override
@@ -755,5 +790,47 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         public List<T> reversed() {
             return this;
         }
+
+        @Override
+        public Spliterator<T> spliterator() {
+            return new RepeatSpliterator<>(element, size);
+        }
     }
+
+    private static final class RepeatSpliterator<T extends Object> implements Spliterator<T> {
+
+        private final T element;
+        private int size;
+
+        private RepeatSpliterator(T element, int size) {
+            this.element = element;
+            this.size = size;
+        }
+
+        @Override
+        public boolean tryAdvance(Consumer<? super T> action) {
+            if (size <= 0) return false;
+            size--;
+            action.accept(element);
+            return true;
+        }
+
+        @Override
+        public @Nullable Spliterator<T> trySplit() {
+            if (size <= 1) return null;
+            int splitSize = size >>> 1;
+            size -= splitSize;
+            return new RepeatSpliterator<>(element, splitSize);
+        }
+
+        @Override
+        public long estimateSize() {
+            return size;
+        }
+
+        @Override
+        public int characteristics() {
+            return IMMUTABLE_CHARACTERISTICS;
+        }
+    } 
 }

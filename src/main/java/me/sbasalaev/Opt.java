@@ -26,7 +26,9 @@ package me.sbasalaev;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.*;
+import java.util.stream.Stream;
 import me.sbasalaev.annotation.Out;
 import me.sbasalaev.collection.Collection;
 import me.sbasalaev.collection.Iterators;
@@ -199,6 +201,16 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
     }
 
     /* OVERRIDEN METHODS */
+
+    @Override
+    public Spliterator<T> spliterator() {
+        return java.util.Spliterators.spliterator(toArray(), Spliterator.NONNULL);
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return value != null ? Stream.of(value) : Stream.empty();
+    }
 
     /** Returns this optional. */
     @Override
