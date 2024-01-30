@@ -24,20 +24,19 @@
 package me.sbasalaev.collection;
 
 import me.sbasalaev.annotation.Out;
-import org.checkerframework.checker.index.qual.NonNegative;
 
 /**
  * List element with its corresponding index.
  *
  * @author Sergey Basalaev
  */
-public record IndexedElement<@Out T extends Object>(@NonNegative int index, T element) {
+public record IndexedElement<@Out T extends Object>(int index, T element) {
 
     /**
      * Creates an instance of indexed element.
      * This is a legacy compatibility method from before IndexedElement became a record.
      */
-    public static <T extends Object> IndexedElement<T> of(@NonNegative int index, T element) {
+    public static <T extends Object> IndexedElement<T> of(int index, T element) {
         return new IndexedElement<>(index, element);
     }
 

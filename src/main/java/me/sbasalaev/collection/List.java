@@ -30,10 +30,6 @@ import java.util.function.*;
 import me.sbasalaev.API;
 import me.sbasalaev.Require;
 import me.sbasalaev.annotation.Out;
-import org.checkerframework.checker.index.qual.GTENegativeOne;
-import org.checkerframework.checker.index.qual.IndexFor;
-import org.checkerframework.checker.index.qual.NonNegative;
-import org.checkerframework.checker.index.qual.SameLen;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -102,12 +98,12 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     public static <T extends Object> List<T> fromJava(java.util.List<T> javaList) {
         return new List<>() {
             @Override
-            public T get(@NonNegative int index) {
+            public T get(int index) {
                 return javaList.get(index);
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return javaList.size();
             }
 
@@ -124,7 +120,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     }
 
     /** List that repeats the same element given number of times. */
-    public static <T extends Object> List<T> repeat(T element, @NonNegative int times) {
+    public static <T extends Object> List<T> repeat(T element, int times) {
         Require.nonNegative(times, "times");
         if (times == 0) return empty();
         return new Repeat<>(element, times);
@@ -138,13 +134,13 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
      * @throws IndexOutOfBoundsException
      *   if {@code index} is negative or ≥ {@link #size() }.
      */
-    public abstract T get(@NonNegative int index);
+    public abstract T get(int index);
 
     /**
      * The last valid index in this list.
      * @return {@code size()-1}.
      */
-    public @GTENegativeOne int lastIndex() {
+    public int lastIndex() {
         return size() - 1;
     }
 
@@ -181,7 +177,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
      * The index of the first element satisfying given condition.
      * Returns {@code -1} if there is no such element.
      */
-    public @GTENegativeOne int findIndex(Predicate<? super T> condition) {
+    public int findIndex(Predicate<? super T> condition) {
         return findIndex(condition, 0);
     }
 
@@ -189,7 +185,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
      * The index of the first element satisfying given condition.
      * Returns {@code -1} if there is no such element.
      */
-    public @GTENegativeOne int findIndex(Predicate<? super T> condition, @NonNegative int fromIndex) {
+    public int findIndex(Predicate<? super T> condition, int fromIndex) {
         for (int i = fromIndex; i < size(); i++) {
             if (condition.test(get(i))) {
                 return i;
@@ -202,7 +198,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
      * The index of the last element satisfying given condition.
      * Returns {@code -1} if there is no such element.
      */
-    public @GTENegativeOne int findLastIndex(Predicate<? super T> condition) {
+    public int findLastIndex(Predicate<? super T> condition) {
         for (int i = size() - 1; i >= 0; i--) {
             if (condition.test(get(i))) {
                 return i;
@@ -212,7 +208,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     }
 
     /** Finds item using binary search assuming elements are in increasing order. */
-    public @GTENegativeOne int binarySearch(ToIntFunction<T> comparator) {
+    public int binarySearch(ToIntFunction<T> comparator) {
         int left = 0;
         int right = size();
         while (left < right) {
@@ -236,12 +232,12 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     public List<IndexedElement<T>> indexed() {
         return new List<IndexedElement<T>>() {
             @Override
-            public IndexedElement<T> get(@NonNegative int index) {
+            public IndexedElement<T> get(int index) {
                 return IndexedElement.of(index, List.this.get(index));
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return List.this.size();
             }
 
@@ -279,8 +275,8 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
             @Override
             public Iterator<R> iterator() {
                 return new Iterator<R>() {
-                    private @NonNegative int i = 0;
-                    private @NonNegative int j = 1;
+                    private int i = 0;
+                    private int j = 1;
 
                     @Override
                     public boolean hasNext() {
@@ -332,18 +328,18 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
      * @param offset non-negative offset from the start of the list.
      * @throws IllegalArgumentException if the offset is negative.
      */
-    public List<T> from(@NonNegative int offset) {
+    public List<T> from(int offset) {
         Require.nonNegative(offset, "offset");
         if (offset == 0) return this;
         return new List<T>() {
             @Override
-            public T get(@NonNegative int index) {
+            public T get(int index) {
                 Objects.checkIndex(index, size());
                 return List.this.get(index + offset);
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return Math.max(0, List.this.size() - offset);
             }
         };
@@ -357,17 +353,17 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
      * @throws IllegalArgumentException if given limit is negative.
      */
     @Override
-    public List<T> take(@NonNegative int limit) {
+    public List<T> take(int limit) {
         Require.nonNegative(limit, "limit");
         return new List<T>() {
             @Override
-            public T get(@NonNegative int index) {
+            public T get(int index) {
                 Objects.checkIndex(index, size());
                 return List.this.get(index);
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return Math.min(limit, List.this.size());
             }
         };
@@ -380,13 +376,13 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     public List<T> reversed() {
         return new List<T>() {
             @Override
-            public T get(@NonNegative int index) {
+            public T get(int index) {
                 Objects.checkIndex(index, size());
                 return List.this.get(size() - index - 1);
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return List.this.size();
             }
 
@@ -408,13 +404,13 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
             List<R> zip(List<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         return new List<R>() {
             @Override
-            public R get(@NonNegative int index) {
+            public R get(int index) {
                 Objects.checkIndex(index, size());
                 return zipper.apply(List.this.get(index), other.get(index));
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return Math.min(List.this.size(), other.size());
             }
         };
@@ -425,12 +421,12 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     public java.util.List<T> toJava() {
         return new java.util.AbstractList<>() {
             @Override
-            public T get(@NonNegative int index) {
+            public T get(int index) {
                 return List.this.get(index);
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return List.this.size();
             }
         };
@@ -446,7 +442,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
-            private @NonNegative int next = 0;
+            private int next = 0;
 
             @Override
             public boolean hasNext() {
@@ -487,12 +483,12 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     public <R extends Object> List<R> map(Function<? super T, ? extends R> mapping) {
         return new List<R>() {
             @Override
-            public R get(@NonNegative int index) {
+            public R get(int index) {
                 return mapping.apply(List.this.get(index));
             }
 
             @Override
-            public @NonNegative int size() {
+            public int size() {
                 return List.this.size();
             }
 
@@ -572,14 +568,14 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         private ImmutableList() { }
 
         @Override
-        public List<T> from(@NonNegative int offset) {
+        public List<T> from(int offset) {
             if (offset >= size()) return empty();
             if (offset == 0) return this;
             return super.from(offset);
         }
 
         @Override
-        public List<T> take(@NonNegative int limit) {
+        public List<T> take(int limit) {
             if (limit >= size()) return this;
             if (limit == 0) return empty();
             return super.take(limit);
@@ -613,12 +609,12 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         private EmptyList() { }
 
         @Override
-        public @NonNull Void get(@NonNegative int index) {
+        public @NonNull Void get(int index) {
             throw new IndexOutOfBoundsException(index);
         }
 
         @Override
-        public @NonNegative int size() {
+        public int size() {
             return 0;
         }
 
@@ -680,19 +676,19 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     /** Immutable list backed by an array. */
     private static final class ArrayList<T extends Object> extends ImmutableList<T> {
 
-        private final T @SameLen("this") [] elements;
+        private final T[] elements;
 
-        private ArrayList(T @SameLen("this") [] elements) {
+        private ArrayList(T[] elements) {
             this.elements = elements;
         }
 
         @Override
-        public T get(@IndexFor("this") int index) {
+        public T get(int index) {
             return elements[index];
         }
 
         @Override
-        public @NonNegative int size() {
+        public int size() {
             return elements.length;
         }
 
@@ -714,7 +710,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         }
 
         @Override
-        public void fillArray(@Nullable Object[] array, @NonNegative int fromIndex) {
+        public void fillArray(@Nullable Object[] array, int fromIndex) {
             System.arraycopy(elements, 0, array, fromIndex, elements.length);
         }
     }
@@ -722,26 +718,26 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     private static final class Repeat<T extends Object> extends ImmutableList<T> {
 
         private final T element;
-        private final @NonNegative int size;
+        private final int size;
 
-        private Repeat(T element, @NonNegative int size) {
+        private Repeat(T element, int size) {
             this.element = element;
             this.size = size;
         }
 
         @Override
-        public T get(@NonNegative int index) {
+        public T get(int index) {
             Objects.checkIndex(index, size);
             return element;
         }
 
         @Override
-        public @NonNegative int size() {
+        public int size() {
             return size;
         }
 
         @Override
-        public List<T> from(@NonNegative int offset) {
+        public List<T> from(int offset) {
             Require.nonNegative(offset, "offset");
             if (offset >= size) return empty();
             if (offset == 0) return this;
@@ -749,7 +745,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         }
 
         @Override
-        public List<T> take(@NonNegative int limit) {
+        public List<T> take(int limit) {
             Require.nonNegative(limit, "limit");
             if (limit >= size) return this;
             return new Repeat<>(element, limit);

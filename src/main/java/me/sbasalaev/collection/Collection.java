@@ -28,7 +28,6 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import me.sbasalaev.annotation.Out;
-import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -54,14 +53,14 @@ public abstract class Collection<@Out T extends Object>
      * Number of elements in this collection.
      * Unlike {@link Traversable#count()} this method is guaranteed to be fast.
      */
-    public abstract @NonNegative int size();
+    public abstract int size();
 
     /**
      * Number of elements in this collection.
      * Returns the same value as {@link #size() }.
      */
     @Override
-    public @NonNegative int count() {
+    public int count() {
         return size();
     }
 
@@ -111,7 +110,7 @@ public abstract class Collection<@Out T extends Object>
      *
      * @throws IndexOutOfBoundsException if the collection does not fit into given array.
      */
-    public void fillArray(@Nullable Object[] array, @NonNegative int fromIndex) {
+    public void fillArray(@Nullable Object[] array, int fromIndex) {
         int len = size();
         Objects.checkFromIndexSize(fromIndex, len, array.length);
         int index = fromIndex;

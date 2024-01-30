@@ -32,7 +32,6 @@ import static java.util.function.Predicate.not;
 import me.sbasalaev.API;
 import me.sbasalaev.Opt;
 import me.sbasalaev.annotation.Out;
-import org.checkerframework.checker.index.qual.NonNegative;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -305,7 +304,7 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
         }
 
         @Override
-        public @NonNegative int size() {
+        public int size() {
             return 0;
         }
 
@@ -362,7 +361,7 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
         }
 
         @Override
-        public @NonNegative int size() {
+        public int size() {
             return 1;
         }
 
@@ -387,7 +386,7 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
         }
 
         @Override
-        public @NonNegative int size() {
+        public int size() {
             return wheel.size();
         }
 

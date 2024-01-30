@@ -36,7 +36,6 @@ import static me.sbasalaev.API.some;
 import me.sbasalaev.Opt;
 import me.sbasalaev.Require;
 import me.sbasalaev.annotation.Out;
-import org.checkerframework.checker.index.qual.NonNegative;
 
 /**
  * Collection of elements that may be traversed in sequence.
@@ -74,7 +73,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      *
      * @see Iterators#limit(java.util.Iterator, int) 
      */
-    default Traversable<T> take(@NonNegative int limit) {
+    default Traversable<T> take(int limit) {
         Require.nonNegative(limit, "limit");
         return new AbstractView<T>() {
             @Override
@@ -245,7 +244,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      *
      * @since 4.1
      */
-    public default @NonNegative int count(Predicate<? super T> condition) {
+    public default int count(Predicate<? super T> condition) {
         return filter(condition).count();
     }
 
@@ -256,7 +255,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      * If the traversable has more than {@code Integer.MAX_VALUE}
      * elements, returns {@code Integer.MAX_VALUE}.
      */
-    public default @NonNegative int count() {
+    public default int count() {
         int count = 0;
         for (var __ : this) {
             count++;
