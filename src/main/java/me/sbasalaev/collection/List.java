@@ -44,7 +44,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public abstract class List<@Out T extends Object> extends Collection<T> {
 
     private static final int IMMUTABLE_CHARACTERISTICS =
-        Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED;;
+        Spliterator.IMMUTABLE | Spliterator.NONNULL | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED;
 
     /* CONSTRUCTORS */
 
@@ -445,8 +445,10 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
 
     /**
      * Iterator of this list.
-     * The returned iterator returns elements of this list in order
-     * starting at index 0.
+     * The iterator returns elements of this list in order, starting at index 0.
+     * <p>
+     * The default implementation of this method returns the iterator that is
+     * not aware of the changes made to this list.
      */
     @Override
     public Iterator<T> iterator() {
@@ -478,7 +480,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
     @Override
     public Spliterator<T> spliterator() {
         return java.util.Spliterators.spliterator(iterator(), size(),
-            Spliterator.NONNULL | Spliterator.SIZED | Spliterator.ORDERED);
+            Spliterator.NONNULL | Spliterator.ORDERED);
     }
 
     /**
@@ -519,7 +521,7 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
 
             @Override
             public Spliterator<R> spliterator() {
-                return Spliterators.mapped(List.this.spliterator(), mapping);
+                return Spliterators.map(List.this.spliterator(), mapping);
             }
         };
     }
@@ -698,8 +700,13 @@ public abstract class List<@Out T extends Object> extends Collection<T> {
         }
 
         @Override
+        public Iterator<Void> iterator() {
+            return Iterators.empty();
+        }
+
+        @Override
         public Spliterator<@NonNull Void> spliterator() {
-            return EmptySpliterator.INSTANCE;
+            return Spliterators.empty();
         }
     }
 

@@ -24,7 +24,6 @@
 package me.sbasalaev.collection;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -82,11 +81,6 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
             Traversable<R> chainMap(Function<? super @NonNull Void, ? extends Traversable<R>> mapping) {
         Objects.requireNonNull(mapping, "mapping");
         return (Traversable<R>) this;
-    }
-
-    @Override
-    default Iterator<@NonNull Void> iterator() {
-        return Iterators.empty();
     }
 
     @Override

@@ -37,9 +37,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 final class Spliterators {
 
-    public static final Spliterator<@NonNull Void> EMPTY = new Empty();
+    private static final Spliterator<?> EMPTY = new Empty();
 
-    public static <T, U> Spliterator<U> mapped(Spliterator<T> split, Function<? super T, ? extends U> mapping) {
+    public static <T> Spliterator<T> empty() {
+        return (Spliterator<T>) EMPTY;
+    }
+
+    public static <T, U> Spliterator<U> map(Spliterator<T> split, Function<? super T, ? extends U> mapping) {
         return new Mapped<>(split, mapping);
     }
 

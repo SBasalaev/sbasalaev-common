@@ -353,8 +353,13 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
         }
 
         @Override
+        public Iterator<Void> iterator() {
+            return Iterators.empty();
+        }
+
+        @Override
         public Spliterator<@NonNull Void> spliterator() {
-            return Spliterators.EMPTY;
+            return Spliterators.empty();
         }
     }
 
