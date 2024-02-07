@@ -1,5 +1,8 @@
 ## sbasalaev-common
 
+[![Latest release](https://img.shields.io/github/v/release/sbasalaev/sbasalaev-common)](https://github.com/SBasalaev/sbasalaev-common/releases/latest)
+[![Javadoc](https://img.shields.io/badge/javadoc-orange)](https://api.sbasalaev.me/sbasalaev-common)
+
 Common goodies that I use across my projects.  These are everyday features that
 are not present in Java or were not available at the time of writing or just
 some alternate APIs I comfortable with. The library includes:
