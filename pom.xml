@@ -8,6 +8,13 @@
         <connection>scm:git:git@github.com:SBasalaev/sbasalaev-common.git</connection>
         <tag>HEAD</tag>
     </scm>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub SBasalaev Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/sbasalaev/sbasalaev-common</url>
+        </repository>
+    </distributionManagement>
     <profiles>
         <profile>
             <id>default</id>
@@ -42,6 +49,11 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.2.2</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>3.1.1</version>
                     </plugin>
                 </plugins>
             </build>
@@ -94,7 +106,7 @@
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>3.40.0</version>
+            <version>3.42.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
