@@ -8,13 +8,6 @@
         <connection>scm:git:git@github.com:SBasalaev/sbasalaev-common.git</connection>
         <tag>HEAD</tag>
     </scm>
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub SBasalaev Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/sbasalaev/sbasalaev-common</url>
-        </repository>
-    </distributionManagement>
     <profiles>
         <profile>
             <id>default</id>
