@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,8 +43,13 @@ public class SetTest {
     @Test
     public void testOf() {
         assertEquals(Set.of(1, 2, 3), Set.of(3, 2, 1));
-        assertEquals(Set.of("Aa", "BB"), Set.of("BB", "Aa")); // hashCode collision
+        // hashCode collision
+        assertEquals(Set.of("Aa", "BB"), Set.of("BB", "Aa"));
+        // varargs argument is null
+        assertThrows(NullPointerException.class, () -> Set.of((Object[]) null));
+        // SingletonSet with null
         assertThrows(NullPointerException.class, () -> Set.of((Object) null));
+        // WheelSet with null
         assertThrows(NullPointerException.class, () -> Set.of(1, null));
     }
 

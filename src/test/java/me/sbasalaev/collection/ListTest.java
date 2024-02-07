@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2023 Sergey Basalaev
+ * Copyright 2023-2024 Sergey Basalaev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,8 @@ public class ListTest {
     @Test
     public void testOf() {
         assertEquals(List.of(1, 2, 4), List.of(1, 2, 4));
+        assertThrows(NullPointerException.class, () -> List.of((Object[]) null));
+        assertThrows(NullPointerException.class, () -> List.of(1, null));
     }
 
     @Test

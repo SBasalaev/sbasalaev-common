@@ -64,7 +64,7 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
      */
     @SafeVarargs
     public static <T extends Object> Set<T> of(T... elements) {
-        return fromTrustedArray(elements.clone());
+        return fromTrustedArray(Require.noNulls(elements).clone());
     }
 
     /**
