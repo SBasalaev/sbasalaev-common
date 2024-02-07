@@ -23,10 +23,10 @@
  */
 package me.sbasalaev.collection;
 
-import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import me.sbasalaev.Require;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -64,12 +64,12 @@ final class Spliterators {
 
         @Override
         public void forEachRemaining(Consumer<? super @NonNull Void> action) {
-            Objects.requireNonNull(action);
+            Require.nonNull(action, "action");
         }
 
         @Override
         public boolean tryAdvance(Consumer<? super @NonNull Void> action) {
-            Objects.requireNonNull(action);
+            Require.nonNull(action, "action");
             return false;
         }
 

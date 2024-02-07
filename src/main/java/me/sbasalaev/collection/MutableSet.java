@@ -25,9 +25,9 @@ package me.sbasalaev.collection;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.IntFunction;
+import me.sbasalaev.Require;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -93,7 +93,7 @@ public abstract class MutableSet<T extends Object>
 
         @Override
         public boolean add(T element) {
-            return impl.add(Objects.requireNonNull(element));
+            return impl.add(Require.nonNull(element, "element"));
         }
 
         @Override

@@ -30,6 +30,7 @@ import java.util.function.Function;
 import static me.sbasalaev.API.maybe;
 import static me.sbasalaev.API.some;
 import me.sbasalaev.Opt;
+import me.sbasalaev.Require;
 import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -59,7 +60,7 @@ public abstract class Map<K extends Object, @Out V extends Object>
     /** Map containing given entry. */
     public static <K extends Object, V extends Object>
             Map<K, V> of(K key, V value) {
-        return new SingletonMap<>(Objects.requireNonNull(key), Objects.requireNonNull(value));
+        return new SingletonMap<>(key, value);
     }
 
     /** Map containing given entries. */
@@ -168,7 +169,7 @@ public abstract class Map<K extends Object, @Out V extends Object>
             case 0 -> empty();
             case 1 -> {
                 var e = entries[0];
-                yield new SingletonMap<>(Objects.requireNonNull(e.key()), Objects.requireNonNull(e.value()));
+                yield new SingletonMap<>(e.key(), e.value());
             }
             default-> new WheelMap<>(HashWheel.make(entries, Entry::key));
         };
@@ -286,7 +287,7 @@ public abstract class Map<K extends Object, @Out V extends Object>
 
     /** View of this map with given mapping applied to values. */
     public <W extends Object> Map<K, W> mapValues(Function<? super V, ? extends W> mapping) {
-        Objects.requireNonNull(mapping);
+        Require.nonNull(mapping, "mapping");
         return new Map<K, W>() {
             @Override
             public Set<Entry<K, W>> entries() {
@@ -460,7 +461,7 @@ public abstract class Map<K extends Object, @Out V extends Object>
         @Override
         public <W extends Object>
                 Map<Object, W> mapValues(Function<? super @NonNull Void, ? extends W> mapping) {
-            Objects.requireNonNull(mapping);
+            Require.nonNull(mapping, "mapping");
             return Map.empty();
         }
 
@@ -477,8 +478,8 @@ public abstract class Map<K extends Object, @Out V extends Object>
         private final V value;
 
         SingletonMap(K key, V value) {
-            this.key = key;
-            this.value = value;
+            this.key = Require.nonNull(key, "key");
+            this.value = Require.nonNull(value, "value");
         }
 
         @Override

@@ -140,8 +140,8 @@ public final class Iterators {
     /** Filters out iterator elements that do not satisfy {@code condition}. */
     public static <T>
             Iterator<T> filter(Iterator<T> iterator, Predicate<? super T> condition) {
-        Objects.requireNonNull(iterator, "iterator");
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(iterator, "iterator");
+        Require.nonNull(condition, "condition");
         return new Iterator<T>() {
             private @Nullable T nextItem = null;
             private boolean hasNextItem = false;
@@ -179,8 +179,8 @@ public final class Iterators {
 
     /** Applies {@code mapping} to all elements of {@code iterator}. */
     public static <T, R> Iterator<R> map(Iterator<T> iterator, Function<? super T, ? extends R> mapping) {
-        Objects.requireNonNull(iterator, "iterator");
-        Objects.requireNonNull(mapping, "mapping");
+        Require.nonNull(iterator, "iterator");
+        Require.nonNull(mapping, "mapping");
         return new Iterator<R>() {
             @Override
             public boolean hasNext() {
@@ -205,8 +205,8 @@ public final class Iterators {
      * and once it is exhausted, elements of the {@code second}.
      */
     public static <T> Iterator<T> chain(Iterator<? extends T> first, Iterator<? extends T> second) {
-        Objects.requireNonNull(first, "first");
-        Objects.requireNonNull(second, "second");
+        Require.nonNull(first, "first");
+        Require.nonNull(second, "second");
         return new Iterator<T>() {
             @Override
             public boolean hasNext() {
@@ -227,9 +227,9 @@ public final class Iterators {
     /** Combines values produced by iterators using {@code combiner}. */
     public static <T, U, R> Iterator<R> zipBy(Iterator<T> first, Iterator<U> second,
             BiFunction<? super T, ? super U, ? extends R> combiner) {
-        Objects.requireNonNull(first, "first");
-        Objects.requireNonNull(second, "second");
-        Objects.requireNonNull(combiner, "combiner");
+        Require.nonNull(first, "first");
+        Require.nonNull(second, "second");
+        Require.nonNull(combiner, "combiner");
         return new Iterator<R>() {
             @Override
             public boolean hasNext() {
@@ -245,7 +245,7 @@ public final class Iterators {
 
     /** Limits number of elements produced by {@code iterator} by {@code cap}. */
     public static <T> Iterator<T> limit(Iterator<T> iterator, int cap) {
-        Objects.requireNonNull(iterator, "iterator");
+        Require.nonNull(iterator, "iterator");
         Require.nonNegative(cap, "cap");
         return new Iterator<T>() {
             private int n = 0;
@@ -270,8 +270,8 @@ public final class Iterators {
      * Takes values from {@code iterator} until given {@code condition} fails.
      */
     public static <T> Iterator<T> takeWhile(Iterator<T> iterator, Predicate<? super T> condition) {
-        Objects.requireNonNull(iterator, "iterator");
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(iterator, "iterator");
+        Require.nonNull(condition, "condition");
         return new Iterator<T>() {
             private @Nullable T nextItem = null;
             private boolean hasNextItem = false;

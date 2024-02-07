@@ -26,7 +26,6 @@ package me.sbasalaev.collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -58,7 +57,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      * @see Iterators#takeWhile(java.util.Iterator, java.util.function.Predicate) 
      */
     default Traversable<T> takeWhile(Predicate<? super T> condition) {
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(condition, "condition");
         return new AbstractView<T>() {
             @Override
             public Iterator<T> iterator() {
@@ -90,7 +89,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      * @see Iterators#filter(java.util.Iterator, java.util.function.Predicate) 
      */
     default Traversable<T> filter(Predicate<? super T> condition) {
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(condition, "condition");
         return new AbstractView<T>() {
             @Override
             public Iterator<T> iterator() {
@@ -105,7 +104,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     default <U extends Object> Traversable<U> narrow(Class<U> clazz) {
-        Objects.requireNonNull(clazz, "clazz");
+        Require.nonNull(clazz, "clazz");
         return (Traversable<U>) filter(clazz::isInstance);
     }
 
@@ -117,7 +116,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      * @see Iterators#map(java.util.Iterator, java.util.function.Function) 
      */
     default <R extends Object> Traversable<R> map(Function<? super T, ? extends R> mapping) {
-        Objects.requireNonNull(mapping, "mapping");
+        Require.nonNull(mapping, "mapping");
         return new AbstractView<R>() {
             @Override
             public Iterator<R> iterator() {
@@ -140,7 +139,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      * @see Iterators#chain(java.util.Iterator, java.util.Iterator)
      */
     default Traversable<?> chain(Traversable<?> other) {
-        Objects.requireNonNull(other, "other");
+        Require.nonNull(other, "other");
         if (other instanceof EmptyCollection) {
             return this;
         }
@@ -164,7 +163,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
     /** Applies {@code mapping} to the elements and chains the resulting traversables together. */
     @SuppressWarnings("unchecked")
     default <R extends Object> Traversable<R> chainMap(Function<? super T, ? extends Traversable<R>> mapping) {
-        Objects.requireNonNull(mapping, "mapping");
+        Require.nonNull(mapping, "mapping");
         return (Traversable<R>) map(mapping).<Traversable<?>>fold(List.empty(), Traversable::chain);
     }
 
@@ -183,7 +182,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
 
     /** Tests whether any element in this traversable matches given {@code condition}. */
     default boolean exists(Predicate<? super T> condition) {
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(condition, "condition");
         for (var item : this) {
             if (condition.test(item)) return true;
         }
@@ -192,7 +191,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
 
     /** Tests whether all elements in this traversable match given {@code condition}. */
     default boolean forall(Predicate<? super T> condition) {
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(condition, "condition");
         for (var item : this) {
             if (!condition.test(item)) return false;
         }
@@ -204,7 +203,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      * The order of elements is determined by the iterator.
      */
     default <R extends Object> R fold(R first, BiFunction<? super R, ? super T, ? extends R> combine) {
-        Objects.requireNonNull(combine, "combine");
+        Require.nonNull(combine, "combine");
         var result = first;
         for (var item : this) {
             result = combine.apply(result, item);
@@ -214,7 +213,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
 
     /** Returns element that satisfies {@code condition} or empty optional if there is no such element. */
     default Opt<T> find(Predicate<? super T> condition) {
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(condition, "condition");
         for (var item : this) {
             if (condition.test(item)) return some(item);
         }
@@ -288,7 +287,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
     @Deprecated(since = "4.1")
     public default <K extends Object>
             Map<K, ? extends List<T>> groupedBy(Function<? super T, ? extends K> classifier) {
-        Objects.requireNonNull(classifier, "classifier");
+        Require.nonNull(classifier, "classifier");
         var map = MutableMap.<K, MutableList<T>>empty();
         for (var item : this) {
             map.createOrUpdate(classifier.apply(item),
@@ -310,7 +309,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      */
     public default <K extends Object>
             SetMultimap<K, T> groupedIntoSets(Function<? super T, ? extends K> classifier) {
-        Objects.requireNonNull(classifier, "classifier");
+        Require.nonNull(classifier, "classifier");
         var builder = SetMultimap.<K, T>build();
         for (var item : this) {
             builder.add(classifier.apply(item), item);
@@ -329,7 +328,7 @@ public interface Traversable<@Out T extends Object> extends Iterable<T> {
      */
     public default <K extends Object>
             ListMultimap<K, T> groupedIntoLists(Function<? super T, ? extends K> classifier) {
-        Objects.requireNonNull(classifier, "classifier");
+        Require.nonNull(classifier, "classifier");
         var builder = ListMultimap.<K, T>build();
         for (var item : this) {
             builder.add(classifier.apply(item), item);

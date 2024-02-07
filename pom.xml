@@ -21,6 +21,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>3.11.0</version>
                         <configuration>
+                            <parameters>true</parameters>
                             <proc>none</proc>
                         </configuration>
                     </plugin>
@@ -33,6 +34,7 @@
                                 <link>https://checkerframework.org/api/</link>
                             </links>
                             <doclint>all,-missing</doclint>
+                            <author>false</author>
                             <notimestamp>true</notimestamp>
                         </configuration>
                     </plugin>

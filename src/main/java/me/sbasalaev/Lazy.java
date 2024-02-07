@@ -23,7 +23,6 @@
  */
 package me.sbasalaev;
 
-import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -33,23 +32,23 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * This class is thread-safe, the evaluation of the value only happens once
  * and it is safe to call {@link #get() } simultaneously from different threads.
  *
- * @since 1.1
- *
+ * @param <T> the type of the value, may be nullable.
  * @author Sergey Basalaev
+ * @since 1.1
  */
 public final class Lazy<@Out T> implements Supplier<T> {
 
-    private volatile T value;
+    private volatile @Nullable T value;
     private volatile @Nullable Supplier<T> supplier;
     private final Object lock = new Object();
 
-    /** Creates new instance that lazily evaluates value from given supplier. */
+    /** Creates new instance that lazily evaluates the value from the {@code supplier}. */
     public Lazy(Supplier<T> supplier) {
         this.value = null;
-        this.supplier = requireNonNull(supplier);
+        this.supplier = Require.nonNull(supplier, "supplier");
     }
 
-    /** Creates new instance with the value that is already evaluated. */
+    /** Creates new instance with the {@code value} that is already evaluated. */
     public Lazy(T value) {
         this.value = value;
         this.supplier = null;
@@ -60,6 +59,7 @@ public final class Lazy<@Out T> implements Supplier<T> {
      * If value is already evaluated, just returns it.
      */
     @Override
+    @SuppressWarnings("nullness")
     public T get() {
         if (supplier != null) {
             synchronized (lock) {
@@ -74,7 +74,7 @@ public final class Lazy<@Out T> implements Supplier<T> {
 
     /** True iff value is already evaluated. */
     public boolean isEvaluated() {
-        return value != null;
+        return supplier == null;
     }
 
     @Override

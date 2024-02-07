@@ -25,7 +25,6 @@ package me.sbasalaev.collection;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
@@ -34,6 +33,7 @@ import java.util.function.UnaryOperator;
 import static me.sbasalaev.API.none;
 import static me.sbasalaev.API.some;
 import me.sbasalaev.Opt;
+import me.sbasalaev.Require;
 
 /**
  * Map that can be mutated.
@@ -175,12 +175,12 @@ public abstract class MutableMap<K extends Object, V extends Object>
 
         @Override
         public Opt<V> get(Object key) {
-            return Opt.ofNullable(impl.get(Objects.requireNonNull(key)));
+            return Opt.ofNullable(impl.get(Require.nonNull(key, "key")));
         }
 
         @Override
         public Opt<V> set(K key, V value) {
-            return Opt.ofNullable(impl.put(Objects.requireNonNull(key), Objects.requireNonNull(value)));
+            return Opt.ofNullable(impl.put(Require.nonNull(key, "key"), Require.nonNull(value, "value")));
         }
 
         @Override

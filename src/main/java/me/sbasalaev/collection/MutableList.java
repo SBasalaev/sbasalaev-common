@@ -23,13 +23,14 @@
  */
 package me.sbasalaev.collection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Spliterator;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import java.util.function.UnaryOperator;
-import me.sbasalaev.collection.Collection;
-import me.sbasalaev.collection.List;
-import me.sbasalaev.collection.Set;
+import me.sbasalaev.Require;
 
 /**
  * List that can be mutated.
@@ -162,12 +163,12 @@ public abstract class MutableList<T extends Object>
 
         @Override
         public void insert(int index, T element) {
-            impl.add(index, Objects.requireNonNull(element));
+            impl.add(index, Require.nonNull(element, "element"));
         }
 
         @Override
         public boolean add(T element) {
-            return impl.add(Objects.requireNonNull(element));
+            return impl.add(Require.nonNull(element, "element"));
         }
 
         @Override

@@ -77,7 +77,7 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
 
     /** Non-empty optional. */
     public static <T extends Object> Opt<T> of(T value) {
-        return new Opt<>(Objects.requireNonNull(value));
+        return new Opt<>(Require.nonNull(value, "value"));
     }
 
     /** Optional of non-null value, empty optional for null. */
@@ -101,7 +101,7 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
     //     <S> T|S orElse(S defaultValue)
     /** Returns value in this optional or {@code defaultValue} if the optional is empty. */
     public T orElse(@SuppressWarnings("variance") T defaultValue) {
-        Objects.requireNonNull(defaultValue);
+        Require.nonNull(defaultValue, "defaultValue");
         return value != null ? value : defaultValue;
     }
 
@@ -109,7 +109,7 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
     //     <S> T|S orElse(Supplier<? extends S> defaultValue)
     /** Returns value in this optional or the value from {@code valueSupplier} if the optional is empty. */
     public T orElseGet(@SuppressWarnings("variance") Supplier<? extends T> valueSupplier) {
-        Objects.requireNonNull(valueSupplier);
+        Require.nonNull(valueSupplier, "valueSupplier");
         return value != null ? value : valueSupplier.get();
     }
 
@@ -143,8 +143,8 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
      * </pre>
      */
     public <R> R match(Function<T, R> onNonEmpty, Supplier<R> onEmpty) {
-        Objects.requireNonNull(onNonEmpty);
-        Objects.requireNonNull(onEmpty);
+        Require.nonNull(onNonEmpty, "onNonEmpty");
+        Require.nonNull(onEmpty, "onEmpty");
         return value != null ? onNonEmpty.apply(value) : onEmpty.get();
     }
 
@@ -159,8 +159,8 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
      * </pre>
      */
     public void matchDo(Consumer<T> action, Runnable emptyAction) {
-        Objects.requireNonNull(action);
-        Objects.requireNonNull(emptyAction);
+        Require.nonNull(action, "action");
+        Require.nonNull(emptyAction, "emptyAction");
         if (value != null) {
             action.accept(value);
         } else {
@@ -179,7 +179,7 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
      */
     @Override
     public <R extends Object> Opt<R> mapped(Function<? super T, ? extends R> mapping) {
-        Objects.requireNonNull(mapping);
+        Require.nonNull(mapping, "mapping");
         return value != null ? Opt.of(mapping.apply(value)) : empty();
     }
 
@@ -189,7 +189,7 @@ public final class Opt<@Out T extends Object> extends Collection<T> {
      */
     @Override
     public Opt<T> filtered(Predicate<? super T> condition) {
-        Objects.requireNonNull(condition);
+        Require.nonNull(condition, "condition");
         return value != null && condition.test(value) ? this : empty();
     }
 

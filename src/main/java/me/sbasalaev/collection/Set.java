@@ -32,6 +32,7 @@ import java.util.function.Predicate;
 import static java.util.function.Predicate.not;
 import me.sbasalaev.API;
 import me.sbasalaev.Opt;
+import me.sbasalaev.Require;
 import me.sbasalaev.annotation.Out;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -68,13 +69,14 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
 
     /**
      * Set containing given elements.
-     * The array of elements is not cloned.
+     * The array of elements is not cloned and is not checked for nulls.
      */
     @SafeVarargs
+    @SuppressWarnings("rawtypes")
     static <T extends Object> Set<T> fromTrustedArray(T... elements) {
         return switch (elements.length) {
             case 0 -> empty();
-            case 1 -> new SingletonSet<>(Objects.requireNonNull(elements[0]));
+            case 1 -> new SingletonSet<>(elements[0]);
             default-> new RegularSet(HashWheel.make(elements, Function.identity()));
         };
     }
@@ -322,13 +324,13 @@ public abstract class Set<@Out T extends Object> extends Collection<T> {
 
         @Override
         public boolean isSubset(Set<?> other) {
-            Objects.requireNonNull(other);
+            Require.nonNull(other, "other");
             return true;
         }
 
         @Override
         public boolean intersects(Set<?> other) {
-            Objects.requireNonNull(other);
+            Require.nonNull(other, "other");
             return false;
         }
 

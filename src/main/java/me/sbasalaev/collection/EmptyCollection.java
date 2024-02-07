@@ -24,7 +24,6 @@
 package me.sbasalaev.collection;
 
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import me.sbasalaev.Require;
@@ -39,7 +38,7 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
 
     @Override
     default Traversable<@NonNull Void> takeWhile(Predicate<? super @NonNull Void> condition) {
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(condition, "condition");
         return this;
     }
 
@@ -51,14 +50,14 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
 
     @Override
     default Traversable<@NonNull Void> filter(Predicate<? super @NonNull Void> condition) {
-        Objects.requireNonNull(condition, "condition");
+        Require.nonNull(condition, "condition");
         return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     default <U extends Object> Traversable<U> narrow(Class<U> clazz) {
-        Objects.requireNonNull(clazz, "clazz");
+        Require.nonNull(clazz, "clazz");
         return (Traversable<U>) this;
     }
 
@@ -66,20 +65,20 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
     @SuppressWarnings("unchecked")
     default <R extends Object>
             Traversable<R> map(Function<? super @NonNull Void, ? extends R> mapping) {
-        Objects.requireNonNull(mapping, "mapping");
+        Require.nonNull(mapping, "mapping");
         return (Traversable<R>) this;
     }
 
     @Override
     default Traversable<?> chain(Traversable<?> other) {
-        return Objects.requireNonNull(other, "other");
+        return Require.nonNull(other, "other");
     }
 
     @Override
     @SuppressWarnings("unchecked")
     default <R extends Object>
             Traversable<R> chainMap(Function<? super @NonNull Void, ? extends Traversable<R>> mapping) {
-        Objects.requireNonNull(mapping, "mapping");
+        Require.nonNull(mapping, "mapping");
         return (Traversable<R>) this;
     }
 
@@ -97,27 +96,27 @@ interface EmptyCollection extends Traversable<@NonNull Void> {
     @Deprecated
     default <K extends Object>
             Map<K, ? extends List<@NonNull Void>> groupedBy(Function<? super @NonNull Void, ? extends K> classifier) {
-        Objects.requireNonNull(classifier, "classifier");
+        Require.nonNull(classifier, "classifier");
         return Map.empty();
     }
 
     @Override
     default <K extends Object>
             ListMultimap<K, @NonNull Void> groupedIntoLists(Function<? super @NonNull Void, ? extends K> classifier) {
-        Objects.requireNonNull(classifier, "classifier");
+        Require.nonNull(classifier, "classifier");
         return ListMultimap.empty();
     }
 
     @Override
     default <K extends Object>
             SetMultimap<K, @NonNull Void> groupedIntoSets(Function<? super @NonNull Void, ? extends K> classifier) {
-        Objects.requireNonNull(classifier, "classifier");
+        Require.nonNull(classifier, "classifier");
         return SetMultimap.empty();
     }
 
     @Override
     default List<@NonNull Void> sortedBy(Comparator<? super @NonNull Void> comparing) {
-        Objects.requireNonNull(comparing, "comparing");
+        Require.nonNull(comparing, "comparing");
         return List.empty();
     }
 }

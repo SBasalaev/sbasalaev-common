@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2015 Sergey Basalaev.
+ * Copyright 2015, 2024 Sergey Basalaev.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,60 @@
  */
 package me.sbasalaev;
 
+import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Assertions in code.
- * All methods throw AssertionError if the corresponding tests fail.
+ * All methods throw {@code AssertionError} if the corresponding tests fail.
+ * To check the preconditions of methods and constructors where the exceptional
+ * situation is <i>the caller's fault</i> for not following method contract use
+ * {@link Require} instead. The method names are chosen so that {@code Assert}
+ * class itself is imported rather than individual methods, e.g.
+ * {@snippet lang = java :
+ * var list = List.of("A", "B", "C");
+ * Assert.that(list.last().equals("C"));
+ * }
  *
  * @author Sergey Basalaev
+ * @see Require
  */
 public final class Assert {
 
     private Assert() { }
 
-    /** Asserts given expression is true. */
+    /**
+     * Asserts given {@code expression} is true.
+     * 
+     * @param expression the expression to be checked.
+     * @throws AssertionError if {@code expression} is false.
+     */
     public static void that(boolean expression) {
         if (!expression) throw new AssertionError();
     }
 
-    /** Asserts given expression is false. */
+    /**
+     * Asserts given {@code expression} is false.
+     *
+     * @param expression the expression to be checked.
+     * @throws AssertionError if {@code expression} is true.
+     */
     public static void not(boolean expression) {
         if (expression) throw new AssertionError();
     }
 
-    /** Asserts given reference is not {@code null}. */
-    public static <T> T nonNull(@Nullable T reference) {
-        if (reference == null) throw new AssertionError();
-        return reference;
+    /**
+     * Asserts given {@code value} is not {@code null}.
+     *
+     * @param <T> the type of the value.
+     * @param value the value to be checked.
+     * @return the value if it is not {@code null}.
+     * @throws AssertionError if the {@code value} is {@code null}.
+     * @see Require#nonNull(java.lang.Object, java.lang.String)
+     * @see Objects#nonNull(java.lang.Object) 
+     */
+    public static <T> T nonNull(@Nullable T value) {
+        if (value == null) throw new AssertionError();
+        return value;
     }
 }
