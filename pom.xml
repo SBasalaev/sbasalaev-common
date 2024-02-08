@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.sbasalaev.common</groupId>
     <artifactId>sbasalaev-common</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.1</version>
     <scm>
         <connection>scm:git:git@github.com:SBasalaev/sbasalaev-common.git</connection>
-        <tag>HEAD</tag>
+        <tag>v4.1</tag>
     </scm>
     <profiles>
         <profile>
